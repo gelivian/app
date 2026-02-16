@@ -1,13 +1,20 @@
-let tg = window.Telegram.WebApp;
+let tg = null;
 let userId = null;
 
-// Инициализация
-tg.ready();
-tg.expand();
-
-if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    userId = tg.initDataUnsafe.user.id;
-    console.log('User ID:', userId);
+// Проверяем, открыто ли приложение в Telegram
+if (window.Telegram && window.Telegram.WebApp) {
+    tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        userId = tg.initDataUnsafe.user.id;
+        console.log('User ID:', userId);
+    }
+} else {
+    console.log('Приложение открыто вне Telegram (режим отладки)');
+    // Для отладки в браузере
+    userId = 12345;
 }
 
 // Загружаем категории при старте
@@ -35,8 +42,20 @@ const mockProducts = {
         { id: 7, name: 'Икра горбуши 2025', price: 2200, unit: '250 гр', special_tag: '2025 год' },
         { id: 8, name: 'Икра форели 2025', price: 3250, unit: '0.5 кг', special_tag: '2025 год' },
     ],
+    3: [ // КОНСЕРВЫ
+        { id: 9, name: 'Тунец в натуральном соку', price: 650, unit: '450 гр', special_tag: '' },
+        { id: 10, name: 'Морской коктейль', price: 750, unit: '450 гр', special_tag: '' },
+    ],
     4: [ // КРЕВЕТКИ
         { id: 13, name: 'Креветка Ванамей', price: 1350, unit: 'кг', special_tag: '16/20' },
+    ],
+    5: [ // СУПОВЫЕ НАБОРЫ
+        { id: 14, name: 'Том Ям острый', price: 550, unit: 'уп', special_tag: 'острый' },
+        { id: 15, name: 'Суповые наборы', price: 250, unit: 'кг', special_tag: 'В наличии' },
+    ],
+    6: [ // ПОЛУФАБРИКАТЫ
+        { id: 16, name: 'Рулет мраморный', price: 3300, unit: 'кг', special_tag: 'Мраморный' },
+        { id: 17, name: 'Фарш Форели', price: 1550, unit: 'кг', special_tag: '100% форель' },
     ]
 };
 
@@ -45,6 +64,8 @@ let cart = [];
 // Загрузка категорий
 function loadCategories() {
     const container = document.getElementById('categoriesList');
+    if (!container) return;
+    
     container.innerHTML = '';
     
     mockCategories.forEach(cat => {
@@ -59,32 +80,41 @@ function loadCategories() {
 // Загрузка товаров
 function loadProducts(categoryId, categoryName) {
     const container = document.getElementById('productsList');
+    if (!container) return;
+    
     container.innerHTML = '';
     
     const products = mockProducts[categoryId] || [];
     
-    products.forEach(prod => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        
-        let tagHtml = prod.special_tag ? 
-            `<span class="product-tag">✨ ${prod.special_tag}</span>` : '';
-        
-        card.innerHTML = `
-            <div class="product-info">
-                <h3>${prod.name}</h3>
-                ${tagHtml}
-                <div class="product-price">${prod.price}₽ / ${prod.unit}</div>
-            </div>
-            <button class="add-to-cart-btn" onclick="addToCart(${prod.id}, '${prod.name}', ${prod.price}, '${prod.unit}')">
-                В корзину
-            </button>
-        `;
-        
-        container.appendChild(card);
-    });
+    if (products.length === 0) {
+        container.innerHTML = '<p class="loading">В этой категории пока нет товаров</p>';
+    } else {
+        products.forEach(prod => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            let tagHtml = prod.special_tag ? 
+                `<span class="product-tag">✨ ${prod.special_tag}</span>` : '';
+            
+            card.innerHTML = `
+                <div class="product-info">
+                    <h3>${prod.name}</h3>
+                    ${tagHtml}
+                    <div class="product-price">${prod.price}₽ / ${prod.unit}</div>
+                </div>
+                <button class="add-to-cart-btn" onclick="addToCart(${prod.id}, '${prod.name}', ${prod.price}, '${prod.unit}')">
+                    В корзину
+                </button>
+            `;
+            
+            container.appendChild(card);
+        });
+    }
     
-    document.getElementById('categoryTitle').textContent = categoryName;
+    const titleElement = document.getElementById('categoryTitle');
+    if (titleElement) titleElement.textContent = categoryName;
+    
+    // Переключаем видимость секций
     document.getElementById('categories').style.display = 'none';
     document.getElementById('products').style.display = 'block';
     document.getElementById('cart').style.display = 'none';
@@ -109,16 +139,23 @@ function addToCart(id, name, price, unit) {
     
     updateCartCount();
     
-    tg.showPopup({
-        title: '✅ Добавлено!',
-        message: `${name} добавлен в корзину`,
-        buttons: [{ type: 'ok' }]
-    });
+    // Показываем уведомление только в Telegram
+    if (tg) {
+        tg.showPopup({
+            title: '✅ Добавлено!',
+            message: `${name} добавлен в корзину`,
+            buttons: [{ type: 'ok' }]
+        });
+    } else {
+        alert(`✅ ${name} добавлен в корзину!`);
+    }
 }
 
 // Просмотр корзины
 function viewCart() {
     const container = document.getElementById('cartItems');
+    if (!container) return;
+    
     container.innerHTML = '';
     
     if (cart.length === 0) {
@@ -166,7 +203,8 @@ function removeFromCart(index) {
 // Обновление счетчика
 function updateCartCount() {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.getElementById('cartCount').textContent = count;
+    const cartCountElement = document.getElementById('cartCount');
+    if (cartCountElement) cartCountElement.textContent = count;
 }
 
 // Оформление заказа
@@ -176,28 +214,39 @@ function checkout() {
 }
 
 // Отправка формы
-document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('customerName').value;
-    const phone = document.getElementById('customerPhone').value;
-    
-    if (!name || !phone) {
-        tg.showAlert('Заполните все поля');
-        return;
-    }
-    
-    tg.showPopup({
-        title: '✅ Заказ оформлен!',
-        message: `Спасибо, ${name}! Скоро с вами свяжутся.`,
-        buttons: [{ type: 'ok' }]
+const checkoutForm = document.getElementById('checkoutForm');
+if (checkoutForm) {
+    checkoutForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('customerName').value;
+        const phone = document.getElementById('customerPhone').value;
+        
+        if (!name || !phone) {
+            if (tg) {
+                tg.showAlert('Заполните все поля');
+            } else {
+                alert('Заполните все поля');
+            }
+            return;
+        }
+        
+        if (tg) {
+            tg.showPopup({
+                title: '✅ Заказ оформлен!',
+                message: `Спасибо, ${name}! Скоро с вами свяжутся.`,
+                buttons: [{ type: 'ok' }]
+            });
+        } else {
+            alert(`✅ Спасибо, ${name}! Заказ оформлен.`);
+        }
+        
+        // Очищаем корзину
+        cart = [];
+        updateCartCount();
+        showCategories();
     });
-    
-    // Очищаем корзину
-    cart = [];
-    updateCartCount();
-    showCategories();
-});
+}
 
 // Показать категории
 function showCategories() {
