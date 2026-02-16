@@ -2,7 +2,7 @@ let tg = null;
 let userId = null;
 
 // Адрес вашего API (нужно будет заменить на реальный)
-const API_URL = 'http://localhost:8000'; // Для теста локально
+const API_URL = 'https://fish-shop-api.onrender.com'; // Для теста локально
 // Когда запустите на сервере: const API_URL = 'https://ваш-сервер.com';
 
 // Проверяем, открыто ли приложение в Telegram
