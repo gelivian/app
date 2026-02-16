@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦐 Магазин морепродуктов</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <h1>🦐 МАГАЗИН МОРЕПРОДУКТОВ</h1>
+            <div class="cart-icon" onclick="viewCart()">🛒 <span id="cartCount">0</span></div>
+        </div>
+        
+        <div id="categories" class="section">
+            <h2>Категории</h2>
+            <div id="categoriesList" class="categories-grid"></div>
+        </div>
+        
+        <div id="products" class="section" style="display: none;">
+            <button class="back-btn" onclick="showCategories()">← Назад</button>
+            <h2 id="categoryTitle"></h2>
+            <div id="productsList" class="products-grid"></div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+        
+        <div id="cart" class="section" style="display: none;">
+            <button class="back-btn" onclick="hideCart()">← Назад</button>
+            <h2>Корзина</h2>
+            <div id="cartItems"></div>
+            <div id="cartTotal" class="cart-total"></div>
+            <button id="checkoutBtn" class="checkout-btn" onclick="checkout()">Оформить заказ</button>
+        </div>
+        
+        <div id="checkout" class="section" style="display: none;">
+            <button class="back-btn" onclick="hideCheckout()">← Назад</button>
+            <h2>Оформление заказа</h2>
+            <form id="checkoutForm">
+                <input type="text" id="customerName" placeholder="Ваше имя" required>
+                <input type="tel" id="customerPhone" placeholder="Телефон" required>
+                <button type="submit" class="submit-btn">Подтвердить заказ</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
