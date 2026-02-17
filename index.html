@@ -3,165 +3,433 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🦐 Магазин морепродуктов</title>
+    <title>DEL MAR • Премиум морепродукты</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="app">
-        <!-- ШАПКА -->
+        <!-- ДЕКОРАТИВНЫЙ ФОН -->
+        <div class="ocean-bg">
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+            <div class="wave wave3"></div>
+        </div>
+
+        <!-- ШАПКА ПРЕМИУМ -->
         <div class="header">
-            <h1>🦐 МАГАЗИН МОРЕПРОДУКТОВ</h1>
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-fish"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>DEL MAR</h1>
+                    <span class="logo-sub">PREMIUM SEAFOOD</span>
+                </div>
+            </div>
             <div class="cart-icon" onclick="goToCart()">
-                🛒 <span id="cartCount">0</span>
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" class="cart-count">0</span>
+                <div class="cart-glow"></div>
             </div>
         </div>
 
-        <!-- ГЛАВНОЕ МЕНЮ -->
-        <div id="mainMenu">
-            <button class="big-btn" onclick="showCategories()">🛍 КАТАЛОГ</button>
-            <div class="row">
-                <button class="half-btn" onclick="goToCart()">🛒 КОРЗИНА</button>
-                <button class="half-btn" onclick="showOrders()">📦 ЗАКАЗЫ</button>
+        <!-- ГЛАВНОЕ МЕНЮ - ПРЕМИУМ -->
+        <div id="mainMenu" class="menu-container">
+            <!-- ПРИВЕТСТВЕННЫЙ БАННЕР -->
+            <div class="hero-banner">
+                <div class="hero-content">
+                    <span class="hero-tag">СВЕЖЕСТЬ ИЗ ГЛУБИН</span>
+                    <h2>Добро пожаловать<br>в мир <span class="gold-text">DEL MAR</span></h2>
+                    <p>Эксклюзивные морепродукты премиум-класса</p>
+                </div>
+                <div class="hero-decoration">
+                    <div class="pearl"></div>
+                    <div class="pearl"></div>
+                    <div class="pearl"></div>
+                </div>
             </div>
-            <div class="row">
-                <button class="half-btn" onclick="showReviews()">⭐ ОТЗЫВЫ</button>
-                <button class="half-btn" onclick="showHelp()">ℹ ПОМОЩЬ</button>
+
+            <!-- КАТЕГОРИИ В ВИДЕ ПРЕМИУМ КАРТОЧЕК -->
+            <div class="categories-showcase" onclick="showCategories()">
+                <div class="showcase-card catalog-card">
+                    <div class="card-bg">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-subtitle">КАТАЛОГ</span>
+                        <h3>Морепродукты</h3>
+                        <p>Свежайший улов</p>
+                    </div>
+                    <div class="card-shine"></div>
+                </div>
             </div>
-            <button class="big-btn" onclick="showAbout()">🏢 О НАС</button>
-            <button id="adminBtn" class="admin-btn" style="display: none;" onclick="showAdmin()">👑 АДМИН ПАНЕЛЬ</button>
+
+            <!-- СЕТКА МЕНЮ -->
+            <div class="menu-grid">
+                <div class="menu-item premium-card" onclick="goToCart()">
+                    <div class="item-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Корзина</h4>
+                        <p id="cartMenuDesc">0 товаров</p>
+                    </div>
+                    <div class="item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="menu-item premium-card" onclick="showOrders()">
+                    <div class="item-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Мои заказы</h4>
+                        <p>История покупок</p>
+                    </div>
+                    <div class="item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="menu-item premium-card" onclick="showReviews()">
+                    <div class="item-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Отзывы</h4>
+                        <p>4.8 ★ (124 отзыва)</p>
+                    </div>
+                    <div class="item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="menu-item premium-card" onclick="showHelp()">
+                    <div class="item-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Помощь</h4>
+                        <p>Поддержка 24/7</p>
+                    </div>
+                    <div class="item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
+                <div class="menu-item premium-card" onclick="showAbout()">
+                    <div class="item-icon">
+                        <i class="fas fa-ship"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>О нас</h4>
+                        <p>С 2015 года</p>
+                    </div>
+                    <div class="item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- АДМИН КНОПКА -->
+            <button id="adminBtn" class="admin-premium" style="display: none;" onclick="showAdmin()">
+                <i class="fas fa-crown"></i>
+                <span>АДМИН-ПАНЕЛЬ</span>
+            </button>
+
+            <!-- ПРЕИМУЩЕСТВА -->
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-snowflake"></i>
+                    <span>Свежесть</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-truck"></i>
+                    <span>Доставка</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-medal"></i>
+                    <span>Премиум</span>
+                </div>
+            </div>
         </div>
 
         <!-- КАТАЛОГ - КАТЕГОРИИ -->
-        <div id="categoriesPage" style="display: none;">
-            <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>📋 КАТЕГОРИИ</h2>
-            <div id="categoriesList" class="categories-grid"></div>
+        <div id="categoriesPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">📋</span>
+                Категории
+            </h2>
+            <div id="categoriesList" class="categories-grid-premium"></div>
         </div>
 
         <!-- КАТАЛОГ - ТОВАРЫ -->
-        <div id="productsPage" style="display: none;">
-            <button class="back-btn" onclick="showCategories()">← Назад</button>
-            <h2 id="categoryTitle"></h2>
-            <div id="productsList" class="products-grid"></div>
+        <div id="productsPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showCategories()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 id="categoryTitle" class="page-title"></h2>
+            <div id="productsList" class="products-grid-premium"></div>
         </div>
 
         <!-- ДЕТАЛИ ТОВАРА -->
-        <div id="productDetailPage" style="display: none;">
-            <button class="back-btn" onclick="showProducts(currentCategoryId, currentCategoryName)">← Назад</button>
-            <div id="productDetail" class="product-detail"></div>
+        <div id="productDetailPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showProducts(currentCategoryId, currentCategoryName)">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <div id="productDetail" class="product-detail-premium"></div>
         </div>
 
         <!-- КОРЗИНА -->
-        <div id="cartPage" style="display: none;">
-            <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>🛒 КОРЗИНА</h2>
-            <div class="delivery">✅ Доставка 31 Февраля</div>
-            <div id="cartList" class="cart-items"></div>
-            <div id="cartTotal" class="total"></div>
-            <button class="green-btn" onclick="goToCheckout()">📦 ОФОРМИТЬ ЗАКАЗ</button>
-            <button class="red-btn" onclick="clearCart()">🗑 ОЧИСТИТЬ КОРЗИНУ</button>
+        <div id="cartPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">🛒</span>
+                Корзина
+            </h2>
+            <div class="delivery-badge">
+                <i class="fas fa-check-circle"></i>
+                <span>Доставка 31 Февраля</span>
+            </div>
+            <div id="cartList" class="cart-items-premium"></div>
+            <div id="cartTotal" class="total-premium"></div>
+            <div class="cart-actions">
+                <button class="btn-premium green" onclick="goToCheckout()">
+                    <i class="fas fa-box"></i>
+                    Оформить заказ
+                </button>
+                <button class="btn-premium red" onclick="clearCart()">
+                    <i class="fas fa-trash"></i>
+                    Очистить
+                </button>
+            </div>
         </div>
 
         <!-- ОФОРМЛЕНИЕ ЗАКАЗА -->
-        <div id="checkoutPage" style="display: none;">
-            <button class="back-btn" onclick="goToCart()">← Назад</button>
-            <h2>📦 ОФОРМЛЕНИЕ ЗАКАЗА</h2>
-            <div class="delivery">✅ Доставка 31 Февраля</div>
-            <input type="text" id="customerName" placeholder="Ваше имя" required>
-            <input type="tel" id="customerPhone" placeholder="Телефон" required>
-            <textarea id="orderComment" placeholder="Комментарий к заказу (необязательно)" rows="3"></textarea>
-            <button class="green-btn" onclick="createOrder()">✅ ПОДТВЕРДИТЬ ЗАКАЗ</button>
+        <div id="checkoutPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="goToCart()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">📦</span>
+                Оформление заказа
+            </h2>
+            <div class="delivery-badge">
+                <i class="fas fa-check-circle"></i>
+                <span>Доставка 31 Февраля</span>
+            </div>
+            <div class="checkout-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="customerName" placeholder="Ваше имя" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="customerPhone" placeholder="Телефон" required>
+                </div>
+                <button class="btn-premium green" onclick="createOrder()">
+                    <i class="fas fa-check"></i>
+                    Подтвердить заказ
+                </button>
+            </div>
         </div>
 
         <!-- МОИ ЗАКАЗЫ -->
-        <div id="ordersPage" style="display: none;">
-            <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>📦 МОИ ЗАКАЗЫ</h2>
-            <div id="ordersList" class="orders-list"></div>
+        <div id="ordersPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">📦</span>
+                Мои заказы
+            </h2>
+            <div id="ordersList" class="orders-list-premium"></div>
         </div>
 
         <!-- ОТЗЫВЫ -->
-        <div id="reviewsPage" style="display: none;">
-            <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>⭐ ОТЗЫВЫ</h2>
-            <div id="reviewsStats" class="stats-box"></div>
-            <div id="reviewsList" class="reviews-list"></div>
-            <button class="green-btn" onclick="showAddReview()">✍ НАПИСАТЬ ОТЗЫВ</button>
+        <div id="reviewsPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">⭐</span>
+                Отзывы
+            </h2>
+            <div id="reviewsStats" class="stats-premium"></div>
+            <div id="reviewsList" class="reviews-list-premium"></div>
+            <button class="btn-premium green" onclick="showAddReview()">
+                <i class="fas fa-pen"></i>
+                Написать отзыв
+            </button>
         </div>
 
         <!-- ДОБАВИТЬ ОТЗЫВ -->
-        <div id="addReviewPage" style="display: none;">
-            <button class="back-btn" onclick="showReviews()">← Назад</button>
-            <h2>✍ НАПИСАТЬ ОТЗЫВ</h2>
-            <div class="stars">
-                <span onclick="setRating(1)">⭐</span>
-                <span onclick="setRating(2)">⭐</span>
-                <span onclick="setRating(3)">⭐</span>
-                <span onclick="setRating(4)">⭐</span>
-                <span onclick="setRating(5)">⭐</span>
+        <div id="addReviewPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showReviews()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">✍</span>
+                Написать отзыв
+            </h2>
+            <div class="rating-container">
+                <span class="rating-label">Ваша оценка:</span>
+                <div class="stars-premium">
+                    <span onclick="setRating(1)"><i class="fas fa-star"></i></span>
+                    <span onclick="setRating(2)"><i class="fas fa-star"></i></span>
+                    <span onclick="setRating(3)"><i class="fas fa-star"></i></span>
+                    <span onclick="setRating(4)"><i class="fas fa-star"></i></span>
+                    <span onclick="setRating(5)"><i class="fas fa-star"></i></span>
+                </div>
             </div>
-            <textarea id="reviewText" placeholder="Ваш отзыв" rows="4"></textarea>
-            <button class="green-btn" onclick="submitReview()">📤 ОТПРАВИТЬ</button>
+            <textarea id="reviewText" placeholder="Ваш отзыв" rows="4" class="premium-textarea"></textarea>
+            <button class="btn-premium green" onclick="submitReview()">
+                <i class="fas fa-paper-plane"></i>
+                Отправить
+            </button>
         </div>
 
         <!-- ПОМОЩЬ -->
-        <div id="helpPage" style="display: none;">
-            <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>ℹ ПОМОЩЬ</h2>
-            <div class="info-box">
-                <p>📞 Поддержка: @admin</p>
+        <div id="helpPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">ℹ</span>
+                Помощь
+            </h2>
+            <div class="help-card">
+                <i class="fas fa-headset help-icon"></i>
+                <h3>Служба поддержки</h3>
+                <p>Мы всегда рады помочь!</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-telegram"></i>
+                        <span>@delmar_support</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>support@delmar.ru</span>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- О НАС -->
-        <div id="aboutPage" style="display: none;">
-            <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>🏢 О НАС</h2>
-            <div class="info-box">
-                <p><b>🦐 МАГАЗИН МОРЕПРОДУКТОВ</b></p>
-                <p>📍 Адрес: г. Волгоград, ул. Рабоче-Крестьянская</p>
-                <p>📞 Контакты: +7 (999) 123-45-67</p>
-                <p>🚚 Доставка: 31 Февраля</p>
-                <p>- Самовывоз - бесплатно</p>
-                <p>💳 Оплата: наличные, перевод на карту</p>
-                <p>⭐ Работаем с 2015 года</p>
+        <div id="aboutPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">🏢</span>
+                О нас
+            </h2>
+            <div class="about-card">
+                <div class="about-logo">DEL MAR</div>
+                <p class="about-slogan">Премиальные морепродукты с 2015 года</p>
+                
+                <div class="about-info">
+                    <div class="info-row">
+                        <i class="fas fa-location-dot"></i>
+                        <span>г. Волгоград, ул. Рабоче-Крестьянская</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-phone"></i>
+                        <span>+7 (999) 123-45-67</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-truck"></i>
+                        <span>Бесплатная доставка</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Наличные / Перевод на карту</span>
+                    </div>
+                </div>
+
+                <div class="stats-mini">
+                    <div class="stat-mini">
+                        <span class="stat-value">9+</span>
+                        <span class="stat-label">Лет работы</span>
+                    </div>
+                    <div class="stat-mini">
+                        <span class="stat-value">5000+</span>
+                        <span class="stat-label">Клиентов</span>
+                    </div>
+                    <div class="stat-mini">
+                        <span class="stat-value">100+</span>
+                        <span class="stat-label">Видов</span>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- АДМИН ПАНЕЛЬ -->
-        <div id="adminPage" style="display: none;">
-            <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>👑 АДМИН ПАНЕЛЬ</h2>
+        <div id="adminPage" style="display: none;" class="page premium-page">
+            <button class="back-btn-premium" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Назад</span>
+            </button>
+            <h2 class="page-title">
+                <span class="title-icon">👑</span>
+                Админ-панель
+            </h2>
             
             <!-- СТАТИСТИКА -->
-            <div class="admin-section">
-                <h3>📊 СТАТИСТИКА МАГАЗИНА</h3>
-                <div id="adminStats" class="stats-grid"></div>
+            <div class="admin-section premium">
+                <h3><i class="fas fa-chart-line"></i> Статистика магазина</h3>
+                <div id="adminStats" class="stats-grid-premium"></div>
             </div>
 
             <!-- НОВЫЕ ЗАКАЗЫ -->
-            <div class="admin-section">
-                <h3>📦 НОВЫЕ ЗАКАЗЫ (требуют подтверждения)</h3>
-                <div id="adminOrders"></div>
+            <div class="admin-section premium">
+                <h3><i class="fas fa-clock"></i> Новые заказы</h3>
+                <div id="adminOrders" class="orders-admin"></div>
             </div>
 
             <!-- ОТЗЫВЫ -->
-            <div class="admin-section">
-                <h3>⭐ ОТЗЫВЫ НА МОДЕРАЦИЮ</h3>
-                <div id="adminReviews"></div>
+            <div class="admin-section premium">
+                <h3><i class="fas fa-star"></i> Отзывы на модерацию</h3>
+                <div id="adminReviews" class="reviews-admin"></div>
             </div>
 
             <!-- УПРАВЛЕНИЕ ТОВАРАМИ -->
-            <div class="admin-section">
-                <h3>📦 УПРАВЛЕНИЕ ТОВАРАМИ</h3>
+            <div class="admin-section premium">
+                <h3><i class="fas fa-boxes"></i> Управление товарами</h3>
                 <div class="admin-buttons">
-                    <button class="admin-action-btn" onclick="exportProducts()">📤 ЭКСПОРТ ТОВАРОВ (Excel)</button>
-                    <button class="admin-action-btn" onclick="importProducts()">📥 ИМПОРТ ТОВАРОВ (Excel)</button>
-                </div>
-                <div class="admin-buttons">
-                    <button class="admin-action-btn" onclick="exportOrders()">📊 ЭКСПОРТ ЗАКАЗОВ (CSV)</button>
-                    <button class="admin-action-btn" onclick="showEditProducts()">✏ РЕДАКТИРОВАТЬ ТОВАРЫ</button>
+                    <button class="admin-btn-premium" onclick="exportProducts()">
+                        <i class="fas fa-file-excel"></i> Экспорт товаров
+                    </button>
+                    <button class="admin-btn-premium" onclick="importProducts()">
+                        <i class="fas fa-file-import"></i> Импорт товаров
+                    </button>
+                    <button class="admin-btn-premium" onclick="exportOrders()">
+                        <i class="fas fa-file-csv"></i> Экспорт заказов
+                    </button>
+                    <button class="admin-btn-premium" onclick="showEditProducts()">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </button>
                 </div>
                 <div id="importStatus" class="import-status"></div>
                 <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="uploadImportFile()">
@@ -169,43 +437,28 @@
 
             <!-- СПИСОК ТОВАРОВ ДЛЯ РЕДАКТИРОВАНИЯ -->
             <div id="editProductsSection" style="display: none;">
-                <h3>✏ ВЫБЕРИТЕ ТОВАР ДЛЯ РЕДАКТИРОВАНИЯ</h3>
+                <h3>Выберите товар для редактирования</h3>
                 <div id="productsEditList" class="products-edit-list"></div>
-                <button class="back-btn" onclick="hideEditProducts()">← Назад к админ-панели</button>
+                <button class="back-btn-premium" onclick="hideEditProducts()">← Назад</button>
             </div>
 
             <!-- ФОРМА РЕДАКТИРОВАНИЯ ТОВАРА -->
             <div id="editProductForm" style="display: none;">
-                <h3 id="editProductTitle">✏ РЕДАКТИРОВАНИЕ ТОВАРА</h3>
-                <input type="text" id="editName" placeholder="Название товара">
-                <textarea id="editDescription" placeholder="Краткое описание" rows="2"></textarea>
-                <textarea id="editFullDescription" placeholder="Полное описание" rows="3"></textarea>
-                <input type="number" id="editPrice" placeholder="Цена">
-                <input type="text" id="editUnit" placeholder="Единица измерения (кг, шт, уп)">
-                <input type="text" id="editWeight" placeholder="Информация о весе">
-                <input type="text" id="editOrigin" placeholder="Происхождение">
-                <input type="text" id="editTag" placeholder="Особая метка">
-                
-                <!-- Управление фотографиями -->
-                <div class="product-photos-section">
-                    <h4>📷 Фотографии товара</h4>
-                    <div id="productPhotosList" class="photos-list"></div>
+                <h3 id="editProductTitle">✏ Редактирование товара</h3>
+                <div class="edit-form">
+                    <input type="text" id="editName" placeholder="Название товара">
+                    <textarea id="editDescription" placeholder="Краткое описание" rows="2"></textarea>
+                    <textarea id="editFullDescription" placeholder="Полное описание" rows="3"></textarea>
+                    <input type="number" id="editPrice" placeholder="Цена">
+                    <input type="text" id="editUnit" placeholder="Единица измерения">
+                    <input type="text" id="editWeight" placeholder="Информация о весе">
+                    <input type="text" id="editOrigin" placeholder="Происхождение">
+                    <input type="text" id="editTag" placeholder="Особая метка">
                     
-                    <div class="photo-upload">
-                        <input type="file" id="photoUpload" accept="image/*" onchange="uploadProductPhoto()">
-                        <label for="photoUpload" class="photo-upload-btn">📤 Загрузить фото</label>
-                        <div id="photoUploadStatus" class="photo-upload-status"></div>
+                    <div class="admin-buttons">
+                        <button class="btn-premium green" onclick="saveProduct()">Сохранить</button>
+                        <button class="btn-premium red" onclick="cancelEdit()">Отмена</button>
                     </div>
-                </div>
-
-                <!-- Новые поля для описания -->
-                <input type="text" id="editStorage" placeholder="Условия хранения">
-                <input type="text" id="editCooking" placeholder="Способы приготовления">
-                <textarea id="editNutrition" placeholder="Пищевая ценность" rows="3"></textarea>
-                
-                <div class="admin-buttons">
-                    <button class="green-btn" onclick="saveProduct()">💾 СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
-                    <button class="red-btn" onclick="cancelEdit()">✕ ОТМЕНА</button>
                 </div>
             </div>
         </div>
