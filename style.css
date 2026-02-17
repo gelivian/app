@@ -12,7 +12,6 @@ body {
 }
 
 /* ==================== ШАПКА ==================== */
-
 .header {
     display: flex;
     justify-content: space-between;
@@ -20,23 +19,44 @@ body {
     margin-bottom: 24px;
     padding-bottom: 12px;
     border-bottom: 2px solid var(--tg-theme-hint-color, #e0e0e0);
+    position: relative;
 }
 
 .header h1 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
+    text-align: center;
+    flex: 1;
+}
+
+.menu-toggle {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--tg-theme-button-color, #3390ec);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .cart-icon {
     font-size: 24px;
     cursor: pointer;
     position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .cart-icon span {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: -2px;
+    right: -2px;
     background: var(--tg-theme-button-color, #3390ec);
     color: white;
     font-size: 12px;
@@ -46,8 +66,73 @@ body {
     text-align: center;
 }
 
-/* ==================== ГЛАВНОЕ МЕНЮ ==================== */
+/* ==================== БОКОВОЕ МЕНЮ ==================== */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background: var(--tg-theme-bg-color, #ffffff);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1000;
+    padding: 20px 0;
+}
 
+.side-menu.open {
+    left: 0;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+}
+
+.close-menu {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--tg-theme-text-color, #000);
+}
+
+.menu-items {
+    padding: 20px;
+}
+
+.menu-item {
+    padding: 15px;
+    margin: 5px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 16px;
+}
+
+.menu-item:hover {
+    background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    z-index: 999;
+}
+
+.overlay.open {
+    display: block;
+}
+
+/* ==================== ГЛАВНОЕ МЕНЮ ==================== */
 .main-menu {
     display: flex;
     flex-direction: column;
@@ -93,7 +178,6 @@ body {
 }
 
 /* ==================== ОБЩИЕ ЭЛЕМЕНТЫ ==================== */
-
 .section {
     margin-bottom: 20px;
     animation: fadeIn 0.3s;
@@ -147,7 +231,6 @@ h2 {
 }
 
 /* ==================== КАТАЛОГ ==================== */
-
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -175,7 +258,6 @@ h2 {
 }
 
 /* ==================== ТОВАРЫ ==================== */
-
 .products-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -243,7 +325,6 @@ h2 {
 }
 
 /* ==================== КОРЗИНА ==================== */
-
 .delivery-info {
     background: var(--tg-theme-secondary-bg-color, #f0f0f0);
     padding: 12px;
@@ -344,7 +425,6 @@ h2 {
 }
 
 /* ==================== ОФОРМЛЕНИЕ ЗАКАЗА ==================== */
-
 #checkoutForm {
     margin-top: 16px;
 }
@@ -384,7 +464,6 @@ h2 {
 }
 
 /* ==================== ЗАКАЗЫ ==================== */
-
 .orders-list {
     margin-top: 16px;
 }
@@ -427,7 +506,6 @@ h2 {
 }
 
 /* ==================== ОТЗЫВЫ ==================== */
-
 .reviews-stats {
     background: var(--tg-theme-secondary-bg-color, #f0f0f0);
     padding: 16px;
@@ -539,7 +617,6 @@ h2 {
 }
 
 /* ==================== ПОМОЩЬ И О НАС ==================== */
-
 .help-content, .about-content {
     background: var(--tg-theme-secondary-bg-color, #f5f5f5);
     padding: 20px;
@@ -557,7 +634,6 @@ h2 {
 }
 
 /* ==================== АДМИН ПАНЕЛЬ ==================== */
-
 .admin-section {
     background: var(--tg-theme-secondary-bg-color, #f5f5f5);
     padding: 16px;
@@ -653,7 +729,6 @@ h2 {
 }
 
 /* ==================== РАССЫЛКА ==================== */
-
 #mailingText {
     width: 100%;
     padding: 14px;
@@ -674,14 +749,13 @@ h2 {
 }
 
 /* ==================== МЕДИА ЗАПРОСЫ ==================== */
-
 @media (max-width: 480px) {
     body {
         padding: 12px;
     }
     
     .header h1 {
-        font-size: 18px;
+        font-size: 16px;
     }
     
     .menu-btn {
@@ -710,7 +784,6 @@ h2 {
 }
 
 /* ==================== АНИМАЦИИ ==================== */
-
 @keyframes slideIn {
     from {
         transform: translateY(20px);
@@ -727,7 +800,6 @@ h2 {
 }
 
 /* ==================== СКРОЛЛБАР ==================== */
-
 ::-webkit-scrollbar {
     width: 6px;
 }

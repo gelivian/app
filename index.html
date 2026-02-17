@@ -9,13 +9,37 @@
 </head>
 <body>
     <div id="app">
-        <!-- Шапка как в боте -->
+        <!-- ШАПКА (видна всегда) -->
         <div class="header">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             <h1>🦐 МАГАЗИН МОРЕПРОДУКТОВ</h1>
-            <div class="cart-icon" onclick="viewCart()">🛒 <span id="cartCount">0</span></div>
+            <div class="cart-icon" onclick="viewCart()">
+                🛒 <span id="cartCount">0</span>
+            </div>
         </div>
 
-        <!-- Главное меню (как в боте) -->
+        <!-- БОКОВОЕ МЕНЮ (слева) -->
+        <div id="sideMenu" class="side-menu">
+            <div class="menu-header">
+                <h3>Меню</h3>
+                <button class="close-menu" onclick="toggleMenu()">✕</button>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="showMainMenu()">🏠 Главная</div>
+                <div class="menu-item" onclick="showCategories()">🛍 Каталог</div>
+                <div class="menu-item" onclick="viewCart()">🛒 Корзина</div>
+                <div class="menu-item" onclick="showOrders()">📦 Мои заказы</div>
+                <div class="menu-item" onclick="showReviews()">⭐ Отзывы</div>
+                <div class="menu-item" onclick="showAbout()">🏢 О нас</div>
+                <div class="menu-item" onclick="showHelp()">ℹ Помощь</div>
+                <div class="menu-item" id="adminMenuItem" style="display: none;" onclick="showAdminPanel()">👑 Админ панель</div>
+            </div>
+        </div>
+
+        <!-- ОВЕРЛЕЙ (затемнение при открытом меню) -->
+        <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+        <!-- ГЛАВНОЕ МЕНЮ (как в боте) -->
         <div id="mainMenu" class="main-menu">
             <button class="menu-btn" onclick="showCategories()">🛍 КАТАЛОГ</button>
             <div class="menu-row">
@@ -32,21 +56,21 @@
             <button id="adminBtn" class="menu-btn admin-btn" style="display: none;" onclick="showAdminPanel()">👑 АДМИН ПАНЕЛЬ</button>
         </div>
 
-        <!-- Категории товаров -->
+        <!-- КАТАЛОГ - КАТЕГОРИИ -->
         <div id="categories" class="section" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>Категории</h2>
             <div id="categoriesList" class="categories-grid"></div>
         </div>
         
-        <!-- Товары в категории -->
+        <!-- КАТАЛОГ - ТОВАРЫ -->
         <div id="products" class="section" style="display: none;">
             <button class="back-btn" onclick="showCategories()">← Назад</button>
             <h2 id="categoryTitle"></h2>
             <div id="productsList" class="products-grid"></div>
         </div>
         
-        <!-- Корзина -->
+        <!-- КОРЗИНА -->
         <div id="cart" class="section" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>🛒 КОРЗИНА</h2>
@@ -57,7 +81,7 @@
             <button class="clear-cart-btn" onclick="clearCart()">🗑 ОЧИСТИТЬ</button>
         </div>
         
-        <!-- Оформление заказа -->
+        <!-- ОФОРМЛЕНИЕ ЗАКАЗА -->
         <div id="checkout" class="section" style="display: none;">
             <button class="back-btn" onclick="hideCheckout()">← Назад</button>
             <h2>📦 ОФОРМЛЕНИЕ ЗАКАЗА</h2>
@@ -69,14 +93,14 @@
             </form>
         </div>
 
-        <!-- Мои заказы -->
+        <!-- МОИ ЗАКАЗЫ -->
         <div id="orders" class="section" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>📦 МОИ ЗАКАЗЫ</h2>
             <div id="ordersList" class="orders-list"></div>
         </div>
 
-        <!-- Отзывы -->
+        <!-- ОТЗЫВЫ -->
         <div id="reviews" class="section" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>⭐ ОТЗЫВЫ</h2>
@@ -85,7 +109,7 @@
             <button class="add-review-btn" onclick="showAddReview()">✍ НАПИСАТЬ ОТЗЫВ</button>
         </div>
 
-        <!-- Добавление отзыва -->
+        <!-- ДОБАВЛЕНИЕ ОТЗЫВА -->
         <div id="addReview" class="section" style="display: none;">
             <button class="back-btn" onclick="showReviews()">← Назад</button>
             <h2>✍ НАПИСАТЬ ОТЗЫВ</h2>
@@ -100,7 +124,7 @@
             <button class="submit-btn" onclick="submitReview()">📤 ОТПРАВИТЬ</button>
         </div>
 
-        <!-- Помощь -->
+        <!-- ПОМОЩЬ -->
         <div id="help" class="section" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>ℹ ПОМОЩЬ</h2>
@@ -117,7 +141,7 @@
             </div>
         </div>
 
-        <!-- О нас -->
+        <!-- О НАС -->
         <div id="about" class="section" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>🏢 О НАС</h2>
@@ -134,7 +158,7 @@
             </div>
         </div>
 
-        <!-- Админ панель -->
+        <!-- АДМИН ПАНЕЛЬ -->
         <div id="adminPanel" class="section" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>👑 АДМИН ПАНЕЛЬ</h2>
@@ -160,7 +184,7 @@
             </div>
         </div>
 
-        <!-- Рассылка (админ) -->
+        <!-- РАССЫЛКА (админ) -->
         <div id="mailing" class="section" style="display: none;">
             <button class="back-btn" onclick="showAdminPanel()">← Назад</button>
             <h2>📨 РАССЫЛКА</h2>
