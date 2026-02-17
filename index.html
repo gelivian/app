@@ -70,6 +70,7 @@
             <div class="delivery">✅ Доставка 31 Февраля</div>
             <input type="text" id="customerName" placeholder="Ваше имя" required>
             <input type="tel" id="customerPhone" placeholder="Телефон" required>
+            <textarea id="orderComment" placeholder="Комментарий к заказу (необязательно)" rows="3"></textarea>
             <button class="green-btn" onclick="createOrder()">✅ ПОДТВЕРДИТЬ ЗАКАЗ</button>
         </div>
 
@@ -141,7 +142,7 @@
 
             <!-- НОВЫЕ ЗАКАЗЫ -->
             <div class="admin-section">
-                <h3>📦(требуют подтверждения)</h3>
+                <h3>📦 НОВЫЕ ЗАКАЗЫ (требуют подтверждения)</h3>
                 <div id="adminOrders"></div>
             </div>
 
@@ -184,6 +185,24 @@
                 <input type="text" id="editWeight" placeholder="Информация о весе">
                 <input type="text" id="editOrigin" placeholder="Происхождение">
                 <input type="text" id="editTag" placeholder="Особая метка">
+                
+                <!-- Управление фотографиями -->
+                <div class="product-photos-section">
+                    <h4>📷 Фотографии товара</h4>
+                    <div id="productPhotosList" class="photos-list"></div>
+                    
+                    <div class="photo-upload">
+                        <input type="file" id="photoUpload" accept="image/*" onchange="uploadProductPhoto()">
+                        <label for="photoUpload" class="photo-upload-btn">📤 Загрузить фото</label>
+                        <div id="photoUploadStatus" class="photo-upload-status"></div>
+                    </div>
+                </div>
+
+                <!-- Новые поля для описания -->
+                <input type="text" id="editStorage" placeholder="Условия хранения">
+                <input type="text" id="editCooking" placeholder="Способы приготовления">
+                <textarea id="editNutrition" placeholder="Пищевая ценность" rows="3"></textarea>
+                
                 <div class="admin-buttons">
                     <button class="green-btn" onclick="saveProduct()">💾 СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
                     <button class="red-btn" onclick="cancelEdit()">✕ ОТМЕНА</button>

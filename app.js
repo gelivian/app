@@ -19,6 +19,7 @@ if (tg.initDataUnsafe?.user) {
     console.log('👤 Пользователь:', userId);
     checkAdmin();
     loadCart();
+    checkNotificationPermission();
 }
 
 // ==================== НАВИГАЦИЯ ====================
@@ -127,6 +128,12 @@ function showEditForm(product) {
     document.getElementById('editWeight').value = product.weight_info || '';
     document.getElementById('editOrigin').value = product.origin || '';
     document.getElementById('editTag').value = product.special_tag || '';
+    document.getElementById('editStorage').value = product.storage_conditions || '';
+    document.getElementById('editCooking').value = product.cooking_methods || '';
+    document.getElementById('editNutrition').value = product.nutritional_value || '';
+    
+    // Загружаем существующие фото
+    loadProductPhotos(product.id);
     
     document.getElementById('editProductsSection').style.display = 'none';
     document.getElementById('editProductForm').style.display = 'block';
@@ -136,6 +143,45 @@ function cancelEdit() {
     document.getElementById('editProductForm').style.display = 'none';
     document.getElementById('editProductsSection').style.display = 'block';
     currentEditProduct = null;
+}
+
+// ==================== УВЕДОМЛЕНИЯ ====================
+
+async function checkNotificationPermission() {
+    if (!('Notification' in window)) {
+        console.log('Этот браузер не поддерживает уведомления');
+        return;
+    }
+    
+    if (Notification.permission === 'default') {
+        const result = await Notification.requestPermission();
+        if (result === 'granted') {
+            console.log('Уведомления разрешены');
+        }
+    }
+}
+
+function sendNotification(title, message, icon = '🦐') {
+    if (!('Notification' in window) || Notification.permission !== 'granted') {
+        // Если уведомления не поддерживаются, показываем popup в Telegram
+        tg.showPopup({
+            title: title,
+            message: message,
+            buttons: [{ type: 'ok' }]
+        });
+        return;
+    }
+    
+    const notification = new Notification(title, {
+        body: message,
+        icon: icon,
+        badge: icon
+    });
+    
+    notification.onclick = function() {
+        window.focus();
+        this.close();
+    };
 }
 
 // ==================== КАТАЛОГ ====================
@@ -152,7 +198,17 @@ async function loadCategories() {
         categories.forEach(cat => {
             const div = document.createElement('div');
             div.className = 'category-card';
-            div.innerText = cat.name;
+            
+            // Проверяем наличие фото категории
+            let categoryImage = '';
+            if (cat.photo) {
+                categoryImage = `<img src="${cat.photo}" class="category-image" onerror="this.style.display='none'">`;
+            }
+            
+            div.innerHTML = `
+                ${categoryImage}
+                <div class="category-name">${cat.name}</div>
+            `;
             div.onclick = () => showProducts(cat.id, cat.name);
             container.appendChild(div);
         });
@@ -180,14 +236,23 @@ async function loadProducts(categoryId) {
             div.className = 'product-card';
             div.onclick = () => showProductDetail(p.id);
             
+            let productImage = '';
+            if (p.main_photo) {
+                productImage = `<img src="${p.main_photo}" class="product-thumbnail" onerror="this.style.display='none'">`;
+            } else {
+                productImage = '<div class="product-thumbnail no-image">🦐</div>';
+            }
+            
             let tagHtml = p.special_tag ? 
                 `<span class="product-tag">✨ ${p.special_tag}</span>` : '';
             
             div.innerHTML = `
+                ${productImage}
                 <div class="product-info">
                     <h3>${p.name}</h3>
                     ${tagHtml}
                     <div class="product-price">${p.price}₽ / ${p.unit}</div>
+                    <p class="product-description-short">${p.description || ''}</p>
                 </div>
                 <button class="add-btn" onclick="event.stopPropagation(); addToCart(${p.id}, '${p.name}', ${p.price}, '${p.unit}')">
                     В корзину
@@ -208,11 +273,27 @@ async function loadProductDetail(productId) {
         const response = await fetch(`${API_URL}/api/product/${productId}`);
         const p = await response.json();
         
-        let photos = '';
+        // Галерея фото
+        let photosHtml = '';
+        let mainImageHtml = '';
+        
         if (p.photos && p.photos.length > 0) {
-            photos = `<img src="${p.photos[0].photo_id}" class="product-image" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">`;
+            // Миниатюры для галереи
+            photosHtml = '<div class="product-gallery">';
+            p.photos.forEach((photo, index) => {
+                photosHtml += `
+                    <img src="${photo.photo_id}" class="gallery-image ${index === 0 ? 'active' : ''}" 
+                         onclick="showGalleryImage(this, ${index})"
+                         onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                `;
+            });
+            photosHtml += '</div>';
+            
+            // Основное фото
+            mainImageHtml = `<img src="${p.photos[0].photo_id}" class="product-main-image" id="mainProductImage" 
+                               onerror="this.src='https://via.placeholder.com/300?text=No+Image'">`;
         } else {
-            photos = '<div class="product-image">🦐</div>';
+            mainImageHtml = '<div class="product-main-image no-image">🦐</div>';
         }
         
         let tagHtml = p.special_tag ? 
@@ -222,7 +303,8 @@ async function loadProductDetail(productId) {
             '<div class="product-tag" style="background:#3390ec; color:white;">⏳ ПОД ЗАКАЗ</div>' : '';
         
         container.innerHTML = `
-            ${photos}
+            ${photosHtml}
+            ${mainImageHtml}
             <h2>${p.name} ${tagHtml}</h2>
             <div class="price">${p.price}₽ / ${p.unit}</div>
             ${preorderHtml}
@@ -233,6 +315,7 @@ async function loadProductDetail(productId) {
             
             ${p.full_description ? `
                 <div class="product-full-desc">
+                    <h3>📝 Подробное описание</h3>
                     <p>${p.full_description}</p>
                 </div>
             ` : ''}
@@ -250,7 +333,26 @@ async function loadProductDetail(productId) {
                         ${p.origin}
                     </div>
                 ` : ''}
+                ${p.storage_conditions ? `
+                    <div class="meta-item">
+                        <span>❄️ Хранение</span>
+                        ${p.storage_conditions}
+                    </div>
+                ` : ''}
+                ${p.cooking_methods ? `
+                    <div class="meta-item">
+                        <span>🍳 Приготовление</span>
+                        ${p.cooking_methods}
+                    </div>
+                ` : ''}
             </div>
+            
+            ${p.nutritional_value ? `
+                <div class="nutrition-info">
+                    <h3>🥗 Пищевая ценность</h3>
+                    <p>${p.nutritional_value}</p>
+                </div>
+            ` : ''}
             
             <button class="big-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.price}, '${p.unit}')">
                 🛒 ДОБАВИТЬ В КОРЗИНУ
@@ -259,6 +361,23 @@ async function loadProductDetail(productId) {
     } catch (error) {
         container.innerHTML = '<div class="error">Ошибка загрузки</div>';
     }
+}
+
+function showGalleryImage(img, index) {
+    // Обновляем основное изображение
+    const mainImage = document.getElementById('mainProductImage');
+    if (mainImage) {
+        mainImage.src = img.src;
+    }
+    
+    // Обновляем активный класс в галерее
+    document.querySelectorAll('.gallery-image').forEach((el, i) => {
+        if (i === index) {
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
+    });
 }
 
 // ==================== КОРЗИНА ====================
@@ -337,12 +456,43 @@ function displayCart() {
                 <div class="cart-item-name">${item.name}</div>
                 <div class="cart-item-price">${item.price}₽ × ${item.quantity} = ${itemTotal}₽</div>
             </div>
-            <button class="remove-btn" onclick="removeFromCart(${item.cart_id})">✕</button>
+            <div class="cart-item-controls">
+                <button class="quantity-btn" onclick="changeQuantity(${item.cart_id}, -1)">-</button>
+                <span class="quantity">${item.quantity}</span>
+                <button class="quantity-btn" onclick="changeQuantity(${item.cart_id}, 1)">+</button>
+                <button class="remove-btn" onclick="removeFromCart(${item.cart_id})">✕</button>
+            </div>
         `;
         container.appendChild(div);
     });
     
     totalDiv.innerHTML = `<strong>💰 Итого: ${total} ₽</strong>`;
+}
+
+async function changeQuantity(cartId, delta) {
+    const item = cart.find(i => i.cart_id === cartId);
+    if (!item) return;
+    
+    const newQuantity = item.quantity + delta;
+    if (newQuantity < 1) {
+        removeFromCart(cartId);
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/api/cart/${cartId}?quantity=${newQuantity}`, {
+            method: 'PUT'
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            item.quantity = newQuantity;
+            updateCartCount();
+            displayCart();
+        }
+    } catch (error) {
+        alert('Ошибка изменения количества');
+    }
 }
 
 async function removeFromCart(cartId) {
@@ -391,6 +541,7 @@ function updateCartCount() {
 async function createOrder() {
     const name = document.getElementById('customerName').value.trim();
     const phone = document.getElementById('customerPhone').value.trim();
+    const comment = document.getElementById('orderComment')?.value.trim() || '';
     
     if (!name || !phone) {
         alert('Заполните все поля');
@@ -399,12 +550,18 @@ async function createOrder() {
     
     try {
         const response = await fetch(
-            `${API_URL}/api/order/create?user_id=${userId}&customer_name=${encodeURIComponent(name)}&customer_phone=${encodeURIComponent(phone)}`,
+            `${API_URL}/api/order/create?user_id=${userId}&customer_name=${encodeURIComponent(name)}&customer_phone=${encodeURIComponent(phone)}&comment=${encodeURIComponent(comment)}`,
             { method: 'POST' }
         );
         const data = await response.json();
         
         if (data.success) {
+            // Отправляем уведомление пользователю
+            sendNotification(
+                '✅ Заказ оформлен!',
+                `Ваш заказ №${data.order_id} принят. Ожидайте подтверждения.`
+            );
+            
             cart = [];
             updateCartCount();
             
@@ -448,15 +605,32 @@ async function loadOrders() {
                 itemsHtml += '</div>';
             }
             
+            // Статус с цветом
+            let statusColor = '#666';
+            let statusIcon = '⏳';
+            if (order.status === 'принят') {
+                statusColor = '#4CAF50';
+                statusIcon = '✅';
+            } else if (order.status === 'отклонен') {
+                statusColor = '#ff4444';
+                statusIcon = '❌';
+            } else if (order.status === 'доставлен') {
+                statusColor = '#3390ec';
+                statusIcon = '📦';
+            }
+            
             div.innerHTML = `
                 <div class="order-header">
                     <span>Заказ №${order.id}</span>
-                    <span class="order-status">${order.status}</span>
+                    <span class="order-status" style="background: ${statusColor}20; color: ${statusColor};">
+                        ${statusIcon} ${order.status}
+                    </span>
                 </div>
-                <div>Дата: ${order.date}</div>
-                <div>Доставка: ${order.delivery_date}</div>
+                <div>📅 Дата: ${order.date}</div>
+                <div>🚚 Доставка: ${order.delivery_date}</div>
                 ${itemsHtml}
                 <div class="order-total">💰 ${order.total}₽</div>
+                ${order.comment ? `<div class="order-comment">📝 Комментарий: ${order.comment}</div>` : ''}
             `;
             container.appendChild(div);
         });
@@ -522,8 +696,11 @@ async function loadReviews() {
         const data = await response.json();
         
         statsContainer.innerHTML = `
-            <div>⭐ Всего отзывов: ${data.stats.total}</div>
-            <div>📊 Средний рейтинг: ${data.stats.avg_rating}/5</div>
+            <div class="rating-summary">
+                <div class="average-rating">${data.stats.avg_rating}/5</div>
+                <div class="rating-stars">${'⭐'.repeat(Math.round(data.stats.avg_rating))}</div>
+                <div class="total-reviews">Всего отзывов: ${data.stats.total}</div>
+            </div>
         `;
         
         listContainer.innerHTML = '';
@@ -615,9 +792,10 @@ async function loadAdminData() {
                     <div>📞 ${o.phone}</div>
                     <div>💰 ${o.total}₽</div>
                     <div>📅 ${o.date}</div>
+                    ${o.comment ? `<div>📝 ${o.comment}</div>` : ''}
                     <div class="admin-actions">
-                        <button class="accept-btn" onclick="acceptOrder(${o.id})">✅ Принять</button>
-                        <button class="reject-btn" onclick="rejectOrder(${o.id})">❌ Отклонить</button>
+                        <button class="accept-btn" onclick="acceptOrder(${o.id}, ${o.user_id})">✅ Принять</button>
+                        <button class="reject-btn" onclick="rejectOrder(${o.id}, ${o.user_id})">❌ Отклонить</button>
                     </div>
                 </div>
             `).join('');
@@ -636,8 +814,8 @@ async function loadAdminData() {
                     <div>${r.text || 'Без текста'}</div>
                     <div>📅 ${r.date}</div>
                     <div class="admin-actions">
-                        <button class="accept-btn" onclick="approveReview(${r.id})">✅ Одобрить</button>
-                        <button class="reject-btn" onclick="deleteReview(${r.id})">❌ Удалить</button>
+                        <button class="accept-btn" onclick="approveReview(${r.id}, ${r.user_id})">✅ Одобрить</button>
+                        <button class="reject-btn" onclick="deleteReview(${r.id}, ${r.user_id})">❌ Удалить</button>
                     </div>
                 </div>
             `).join('');
@@ -648,28 +826,52 @@ async function loadAdminData() {
     }
 }
 
-async function acceptOrder(id) {
+async function acceptOrder(id, customerId) {
     try {
         await fetch(`${API_URL}/api/admin/order/${id}/accept`, { method: 'POST' });
+        
+        // Отправляем уведомление клиенту
+        sendNotification(
+            '✅ Заказ принят!',
+            `Ваш заказ №${id} принят и передан в обработку.`,
+            '🦐'
+        );
+        
         loadAdminData();
     } catch (error) {}
 }
 
-async function rejectOrder(id) {
+async function rejectOrder(id, customerId) {
     try {
         await fetch(`${API_URL}/api/admin/order/${id}/cancel`, { method: 'POST' });
+        
+        // Отправляем уведомление клиенту
+        sendNotification(
+            '❌ Заказ отклонен',
+            `К сожалению, заказ №${id} был отклонен. Свяжитесь с поддержкой.`,
+            '🦐'
+        );
+        
         loadAdminData();
     } catch (error) {}
 }
 
-async function approveReview(id) {
+async function approveReview(id, userId) {
     try {
         await fetch(`${API_URL}/api/admin/review/${id}/approve`, { method: 'POST' });
+        
+        // Отправляем уведомление автору
+        sendNotification(
+            '⭐ Отзыв опубликован!',
+            'Ваш отзыв прошел модерацию и опубликован.',
+            '🦐'
+        );
+        
         loadAdminData();
     } catch (error) {}
 }
 
-async function deleteReview(id) {
+async function deleteReview(id, userId) {
     try {
         await fetch(`${API_URL}/api/admin/review/${id}/delete`, { method: 'POST' });
         loadAdminData();
@@ -679,11 +881,45 @@ async function deleteReview(id) {
 // ==================== УПРАВЛЕНИЕ ТОВАРАМИ ====================
 
 async function exportProducts() {
-    window.open(`${API_URL}/api/admin/export-products`, '_blank');
+    try {
+        const response = await fetch(`${API_URL}/api/admin/export-products`);
+        const blob = await response.blob();
+        
+        // Создаем ссылку для скачивания
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `products_export_${new Date().toISOString().slice(0,10)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        sendNotification('📤 Экспорт завершен', 'Файл с товарами скачан');
+    } catch (error) {
+        alert('Ошибка экспорта');
+    }
 }
 
 async function exportOrders() {
-    window.open(`${API_URL}/api/admin/export-orders`, '_blank');
+    try {
+        const response = await fetch(`${API_URL}/api/admin/export-orders`);
+        const blob = await response.blob();
+        
+        // Создаем ссылку для скачивания
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `orders_export_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        sendNotification('📊 Экспорт завершен', 'Файл с заказами скачан');
+    } catch (error) {
+        alert('Ошибка экспорта');
+    }
 }
 
 function importProducts() {
@@ -712,6 +948,7 @@ async function uploadImportFile() {
         if (result.success) {
             statusDiv.className = 'import-status success';
             statusDiv.innerText = `✅ Импорт завершен! Добавлено: ${result.added}, Обновлено: ${result.updated}`;
+            sendNotification('📥 Импорт завершен', `Добавлено: ${result.added}, Обновлено: ${result.updated}`);
         } else {
             statusDiv.className = 'import-status error';
             statusDiv.innerText = `❌ Ошибка: ${result.error}`;
@@ -737,10 +974,18 @@ async function loadProductsForEdit() {
             const div = document.createElement('div');
             div.className = 'product-edit-item';
             div.onclick = () => showEditForm(p);
+            
+            let productThumb = '';
+            if (p.main_photo) {
+                productThumb = `<img src="${p.main_photo}" class="product-edit-thumb" onerror="this.style.display='none'">`;
+            }
+            
             div.innerHTML = `
+                ${productThumb}
                 <div class="product-edit-info">
                     <h4>${p.name}</h4>
                     <div class="product-edit-price">${p.price}₽ / ${p.unit}</div>
+                    <div class="product-edit-category">Категория: ${p.category_name || 'Не указана'}</div>
                 </div>
                 <div class="edit-icon">✏️</div>
             `;
@@ -748,6 +993,78 @@ async function loadProductsForEdit() {
         });
     } catch (error) {
         container.innerHTML = '<div class="error">Ошибка загрузки</div>';
+    }
+}
+
+async function loadProductPhotos(productId) {
+    try {
+        const response = await fetch(`${API_URL}/api/admin/product/${productId}/photos`);
+        const photos = await response.json();
+        
+        const container = document.getElementById('productPhotosList');
+        if (!container) return;
+        
+        if (photos.length === 0) {
+            container.innerHTML = '<div class="no-photos">Нет фотографий</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        photos.forEach(photo => {
+            const div = document.createElement('div');
+            div.className = 'photo-item';
+            div.innerHTML = `
+                <img src="${photo.url}" class="photo-thumb" onclick="window.open('${photo.url}', '_blank')">
+                <button class="delete-photo" onclick="deleteProductPhoto(${productId}, ${photo.id})">✕</button>
+            `;
+            container.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Ошибка загрузки фото:', error);
+    }
+}
+
+async function uploadProductPhoto() {
+    const fileInput = document.getElementById('photoUpload');
+    const file = fileInput.files[0];
+    if (!file || !currentEditProduct) return;
+    
+    const statusDiv = document.getElementById('photoUploadStatus');
+    statusDiv.innerText = '⏳ Загрузка...';
+    
+    const formData = new FormData();
+    formData.append('photo', file);
+    
+    try {
+        const response = await fetch(`${API_URL}/api/admin/product/${currentEditProduct.id}/photos`, {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            statusDiv.innerText = '✅ Фото загружено';
+            loadProductPhotos(currentEditProduct.id);
+        } else {
+            statusDiv.innerText = '❌ Ошибка загрузки';
+        }
+    } catch (error) {
+        statusDiv.innerText = '❌ Ошибка';
+    }
+    
+    fileInput.value = '';
+}
+
+async function deleteProductPhoto(productId, photoId) {
+    if (!confirm('Удалить фото?')) return;
+    
+    try {
+        await fetch(`${API_URL}/api/admin/product/${productId}/photos/${photoId}`, {
+            method: 'DELETE'
+        });
+        loadProductPhotos(productId);
+    } catch (error) {
+        alert('Ошибка удаления');
     }
 }
 
@@ -763,7 +1080,10 @@ async function saveProduct() {
         unit: document.getElementById('editUnit').value.trim(),
         weight_info: document.getElementById('editWeight').value.trim(),
         origin: document.getElementById('editOrigin').value.trim(),
-        special_tag: document.getElementById('editTag').value.trim()
+        special_tag: document.getElementById('editTag').value.trim(),
+        storage_conditions: document.getElementById('editStorage').value.trim(),
+        cooking_methods: document.getElementById('editCooking').value.trim(),
+        nutritional_value: document.getElementById('editNutrition').value.trim()
     };
     
     try {
