@@ -1,152 +1,117 @@
-let tg = null;
+// Telegram WebApp
+let tg = window.Telegram.WebApp;
 let userId = null;
 let currentRating = 0;
 let cart = [];
 
-// API URL
+// API адрес
 const API_URL = 'https://fish-shop-api.onrender.com';
 
-// Инициализация Telegram
-if (window.Telegram && window.Telegram.WebApp) {
-    tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-    
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        userId = tg.initDataUnsafe.user.id;
-        console.log('User ID:', userId);
-        checkAdminStatus();
-    }
-} else {
-    console.log('Режим отладки');
-    userId = 12345;
-}
+// Инициализация
+tg.ready();
+tg.expand();
 
-// Загрузка при старте
-document.addEventListener('DOMContentLoaded', function() {
-    showMainMenu();
-    loadCartFromServer();
-});
+if (tg.initDataUnsafe?.user) {
+    userId = tg.initDataUnsafe.user.id;
+    console.log('Пользователь:', userId);
+    checkAdmin();
+    loadCart();
+}
 
 // ==================== НАВИГАЦИЯ ====================
 
-function toggleMenu() {
-    const menu = document.getElementById('sideMenu');
-    const overlay = document.getElementById('overlay');
-    menu.classList.toggle('open');
-    overlay.classList.toggle('open');
-}
-
-function hideAllSections() {
-    const sections = [
-        'mainMenu', 'categories', 'products', 'cart', 'checkout',
-        'orders', 'reviews', 'addReview', 'help', 'about', 'adminPanel', 'mailing'
-    ];
-    sections.forEach(id => {
+function hideAll() {
+    const pages = ['mainMenu', 'categoriesPage', 'productsPage', 'cartPage', 
+                   'checkoutPage', 'ordersPage', 'reviewsPage', 'addReviewPage',
+                   'helpPage', 'aboutPage', 'adminPage'];
+    pages.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 }
 
 function showMainMenu() {
-    hideAllSections();
+    hideAll();
     document.getElementById('mainMenu').style.display = 'block';
-    toggleMenu();
 }
 
 function showCategories() {
-    hideAllSections();
-    document.getElementById('categories').style.display = 'block';
+    hideAll();
+    document.getElementById('categoriesPage').style.display = 'block';
     loadCategories();
-    toggleMenu();
 }
 
 function showProducts(categoryId, categoryName) {
-    hideAllSections();
-    document.getElementById('products').style.display = 'block';
-    document.getElementById('categoryTitle').textContent = categoryName;
+    hideAll();
+    document.getElementById('productsPage').style.display = 'block';
+    document.getElementById('categoryTitle').innerText = categoryName;
     loadProducts(categoryId);
 }
 
-function showCart() {
-    hideAllSections();
-    document.getElementById('cart').style.display = 'block';
-    loadCart();
-    toggleMenu();
-}
-
-function showCheckout() {
-    hideAllSections();
-    document.getElementById('checkout').style.display = 'block';
-}
-
-function showOrders() {
-    hideAllSections();
-    document.getElementById('orders').style.display = 'block';
-    loadOrders();
-    toggleMenu();
-}
-
-function showReviews() {
-    hideAllSections();
-    document.getElementById('reviews').style.display = 'block';
-    loadReviews();
-    toggleMenu();
-}
-
-function showAddReview() {
-    hideAllSections();
-    document.getElementById('addReview').style.display = 'block';
-}
-
-function showHelp() {
-    hideAllSections();
-    document.getElementById('help').style.display = 'block';
-    toggleMenu();
-}
-
-function showAbout() {
-    hideAllSections();
-    document.getElementById('about').style.display = 'block';
-    toggleMenu();
-}
-
-function showAdminPanel() {
-    hideAllSections();
-    document.getElementById('adminPanel').style.display = 'block';
-    loadAdminData();
-    toggleMenu();
-}
-
-function showMailing() {
-    hideAllSections();
-    document.getElementById('mailing').style.display = 'block';
-}
-
-function hideCheckout() {
+function goToCart() {
+    hideAll();
+    document.getElementById('cartPage').style.display = 'block';
     showCart();
 }
 
-// ==================== ЗАГРУЗКА ДАННЫХ ====================
+function goToCheckout() {
+    hideAll();
+    document.getElementById('checkoutPage').style.display = 'block';
+}
+
+function showOrders() {
+    hideAll();
+    document.getElementById('ordersPage').style.display = 'block';
+    loadOrders();
+}
+
+function showReviews() {
+    hideAll();
+    document.getElementById('reviewsPage').style.display = 'block';
+    loadReviews();
+}
+
+function showAddReview() {
+    hideAll();
+    document.getElementById('addReviewPage').style.display = 'block';
+}
+
+function showHelp() {
+    hideAll();
+    document.getElementById('helpPage').style.display = 'block';
+}
+
+function showAbout() {
+    hideAll();
+    document.getElementById('aboutPage').style.display = 'block';
+}
+
+function showAdmin() {
+    hideAll();
+    document.getElementById('adminPage').style.display = 'block';
+    loadAdminData();
+}
+
+// ==================== КАТАЛОГ ====================
 
 async function loadCategories() {
     const container = document.getElementById('categoriesList');
     container.innerHTML = '<div class="loading">Загрузка...</div>';
     
     try {
-        const response = await fetch(`${API_URL}/api/categories`);
-        const categories = await response.json();
+        const res = await fetch(`${API_URL}/api/categories`);
+        const cats = await res.json();
         
         container.innerHTML = '';
-        categories.forEach(cat => {
-            const card = document.createElement('div');
-            card.className = 'category-card';
-            card.textContent = cat.name;
-            card.onclick = () => showProducts(cat.id, cat.name);
-            container.appendChild(card);
+        cats.forEach(cat => {
+            const div = document.createElement('div');
+            div.className = 'category-card';
+            div.innerText = cat.name;
+            div.onclick = () => showProducts(cat.id, cat.name);
+            container.appendChild(div);
         });
-    } catch (error) {
-        container.innerHTML = '<div class="error">Ошибка загрузки</div>';
+    } catch (e) {
+        container.innerHTML = '<div>Ошибка загрузки</div>';
     }
 }
 
@@ -155,122 +120,63 @@ async function loadProducts(categoryId) {
     container.innerHTML = '<div class="loading">Загрузка...</div>';
     
     try {
-        const response = await fetch(`${API_URL}/api/categories/${categoryId}/products`);
-        const products = await response.json();
+        const res = await fetch(`${API_URL}/api/categories/${categoryId}/products`);
+        const products = await res.json();
         
         container.innerHTML = '';
-        if (products.length === 0) {
-            container.innerHTML = '<div class="loading">В этой категории нет товаров</div>';
-            return;
-        }
-        
-        products.forEach(prod => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            
-            let tagHtml = prod.special_tag ? 
-                `<span class="product-tag">✨ ${prod.special_tag}</span>` : '';
-            
-            card.innerHTML = `
+        products.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'product-card';
+            div.innerHTML = `
                 <div class="product-info">
-                    <h3>${prod.name}</h3>
-                    ${tagHtml}
-                    <div class="product-price">${prod.price}₽ / ${prod.unit}</div>
+                    <h3>${p.name}</h3>
+                    <div class="product-price">${p.price}₽ / ${p.unit}</div>
                 </div>
-                <button class="add-to-cart-btn" onclick="addToCart(${prod.id}, '${prod.name}', ${prod.price}, '${prod.unit}')">
+                <button class="add-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.price}, '${p.unit}')">
                     В корзину
                 </button>
             `;
-            container.appendChild(card);
+            container.appendChild(div);
         });
-    } catch (error) {
-        container.innerHTML = '<div class="error">Ошибка загрузки</div>';
+    } catch (e) {
+        container.innerHTML = '<div>Ошибка загрузки</div>';
     }
 }
 
 // ==================== КОРЗИНА ====================
 
-async function loadCartFromServer() {
-    if (!userId) return;
+async function addToCart(id, name, price, unit) {
+    if (!userId) return alert('Ошибка пользователя');
     
     try {
-        const response = await fetch(`${API_URL}/api/cart/${userId}`);
-        const cartData = await response.json();
-        
-        cart = cartData.items.map(item => ({
-            id: item.product_id,
-            name: item.name,
-            price: item.price,
-            unit: item.unit,
-            quantity: item.quantity,
-            cart_id: item.cart_id
-        }));
-        
-        updateCartCount();
-    } catch (error) {
-        console.error('Ошибка загрузки корзины:', error);
-    }
-}
-
-async function addToCart(productId, name, price, unit) {
-    if (!userId) {
-        alert('Ошибка: не удалось определить пользователя');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/api/cart/add?user_id=${userId}&product_id=${productId}`, {
+        const res = await fetch(`${API_URL}/api/cart/add?user_id=${userId}&product_id=${id}`, {
             method: 'POST'
         });
-        const result = await response.json();
+        const data = await res.json();
         
-        if (result.success) {
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
+        if (data.success) {
+            const exist = cart.find(item => item.id === id);
+            if (exist) {
+                exist.quantity++;
             } else {
-                cart.push({
-                    id: productId,
-                    name: name,
-                    price: price,
-                    unit: unit,
-                    quantity: 1
-                });
+                cart.push({ id, name, price, unit, quantity: 1 });
             }
-            
             updateCartCount();
-            
-            if (tg) {
-                tg.showPopup({
-                    title: '✅ Добавлено!',
-                    message: `${name} добавлен в корзину`,
-                    buttons: [{ type: 'ok' }]
-                });
-            } else {
-                alert(`✅ ${name} добавлен в корзину!`);
-            }
+            tg.showPopup({ title: '✅ Готово', message: `${name} в корзине` });
         }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при добавлении в корзину');
+    } catch (e) {
+        alert('Ошибка');
     }
 }
 
 async function loadCart() {
     if (!userId) return;
     
-    const container = document.getElementById('cartItems');
-    const totalElement = document.getElementById('cartTotal');
-    const checkoutBtn = document.getElementById('checkoutBtn');
-    
-    container.innerHTML = '<div class="loading">Загрузка...</div>';
-    
     try {
-        const response = await fetch(`${API_URL}/api/cart/${userId}`);
-        const cartData = await response.json();
+        const res = await fetch(`${API_URL}/api/cart/${userId}`);
+        const data = await res.json();
         
-        cart = cartData.items.map(item => ({
+        cart = data.items.map(item => ({
             id: item.product_id,
             name: item.name,
             price: item.price,
@@ -278,423 +184,247 @@ async function loadCart() {
             quantity: item.quantity,
             cart_id: item.cart_id
         }));
-        
-        if (cart.length === 0) {
-            container.innerHTML = '<div class="loading">Корзина пуста</div>';
-            totalElement.innerHTML = '';
-            checkoutBtn.style.display = 'none';
-            return;
-        }
-        
-        let total = 0;
-        container.innerHTML = '';
-        
-        cart.forEach((item, index) => {
-            const itemTotal = item.price * item.quantity;
-            total += itemTotal;
-            
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'cart-item';
-            itemDiv.innerHTML = `
-                <div class="cart-item-header">
-                    <span class="cart-item-name">${item.name}</span>
-                    <button class="cart-item-remove" onclick="removeFromCart(${item.cart_id})">✕</button>
-                </div>
-                <div class="cart-item-details">
-                    <span>${item.price}₽ × ${item.quantity}</span>
-                    <span>= ${itemTotal}₽</span>
-                </div>
-            `;
-            container.appendChild(itemDiv);
-        });
-        
-        totalElement.innerHTML = `<strong>💰 Итого: ${total} ₽</strong>`;
-        checkoutBtn.style.display = 'block';
-        
-    } catch (error) {
-        container.innerHTML = '<div class="error">Ошибка загрузки корзины</div>';
+        updateCartCount();
+    } catch (e) {
+        console.log('Ошибка загрузки корзины');
     }
+}
+
+function showCart() {
+    const container = document.getElementById('cartList');
+    const totalDiv = document.getElementById('cartTotal');
+    
+    if (cart.length === 0) {
+        container.innerHTML = '<div class="loading">Корзина пуста</div>';
+        totalDiv.innerHTML = '';
+        return;
+    }
+    
+    let total = 0;
+    container.innerHTML = '';
+    
+    cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+            <div>
+                <div><b>${item.name}</b></div>
+                <div>${item.price}₽ × ${item.quantity} = ${itemTotal}₽</div>
+            </div>
+            <button class="remove-btn" onclick="removeFromCart(${item.cart_id})">✕</button>
+        `;
+        container.appendChild(div);
+    });
+    
+    totalDiv.innerHTML = `<strong>💰 Итого: ${total}₽</strong>`;
 }
 
 async function removeFromCart(cartId) {
     try {
-        const response = await fetch(`${API_URL}/api/cart/${cartId}`, {
-            method: 'DELETE'
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-            cart = cart.filter(item => item.cart_id !== cartId);
-            updateCartCount();
-            loadCart();
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
+        await fetch(`${API_URL}/api/cart/${cartId}`, { method: 'DELETE' });
+        cart = cart.filter(item => item.cart_id !== cartId);
+        updateCartCount();
+        showCart();
+    } catch (e) {
+        alert('Ошибка');
     }
 }
 
 async function clearCart() {
-    if (!userId) return;
-    
     if (!confirm('Очистить корзину?')) return;
     
-    try {
-        for (const item of cart) {
-            if (item.cart_id) {
-                await fetch(`${API_URL}/api/cart/${item.cart_id}`, {
-                    method: 'DELETE'
-                });
-            }
+    for (let item of cart) {
+        if (item.cart_id) {
+            await fetch(`${API_URL}/api/cart/${item.cart_id}`, { method: 'DELETE' });
         }
-        cart = [];
-        updateCartCount();
-        loadCart();
-    } catch (error) {
-        console.error('Ошибка:', error);
     }
+    cart = [];
+    updateCartCount();
+    showCart();
 }
 
 function updateCartCount() {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const cartCountElement = document.getElementById('cartCount');
-    if (cartCountElement) cartCountElement.textContent = count;
+    document.getElementById('cartCount').innerText = count;
 }
 
 // ==================== ЗАКАЗЫ ====================
 
-document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
+async function createOrder() {
     const name = document.getElementById('customerName').value;
     const phone = document.getElementById('customerPhone').value;
     
-    if (!name || !phone) {
-        alert('Заполните все поля');
-        return;
-    }
+    if (!name || !phone) return alert('Заполните все поля');
     
     try {
-        const response = await fetch(
+        const res = await fetch(
             `${API_URL}/api/order/create?user_id=${userId}&customer_name=${encodeURIComponent(name)}&customer_phone=${encodeURIComponent(phone)}`,
             { method: 'POST' }
         );
-        const result = await response.json();
+        const data = await res.json();
         
-        if (result.success) {
-            if (tg) {
-                tg.showPopup({
-                    title: '✅ Заказ оформлен!',
-                    message: `Заказ №${result.order_id}`,
-                    buttons: [{ type: 'ok' }]
-                });
-            } else {
-                alert(`✅ Заказ №${result.order_id} оформлен!`);
-            }
-            
+        if (data.success) {
             cart = [];
             updateCartCount();
+            alert(`✅ Заказ №${data.order_id} оформлен`);
             showOrders();
         }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при оформлении заказа');
+    } catch (e) {
+        alert('Ошибка');
     }
-});
+}
 
 async function loadOrders() {
-    if (!userId) return;
-    
     const container = document.getElementById('ordersList');
     container.innerHTML = '<div class="loading">Загрузка...</div>';
     
     try {
-        const response = await fetch(`${API_URL}/api/user/${userId}/orders`);
-        const orders = await response.json();
-        
-        if (orders.length === 0) {
-            container.innerHTML = '<div class="loading">У вас еще нет заказов</div>';
-            return;
-        }
+        const res = await fetch(`${API_URL}/api/user/${userId}/orders`);
+        const orders = await res.json();
         
         container.innerHTML = '';
         orders.forEach(order => {
-            const orderDiv = document.createElement('div');
-            orderDiv.className = 'order-card';
-            orderDiv.innerHTML = `
-                <div class="order-header">
-                    <span>Заказ №${order.id}</span>
-                    <span class="order-status">${order.status}</span>
-                </div>
-                <div class="order-details">
-                    <div>Дата: ${order.date}</div>
-                    <div>Доставка: ${order.delivery_date}</div>
-                    <div>Товаров: ${order.items.length}</div>
-                    <div class="order-total">💰 ${order.total}₽</div>
-                </div>
+            const div = document.createElement('div');
+            div.className = 'order-card';
+            div.innerHTML = `
+                <div><b>Заказ №${order.id}</b> - ${order.status}</div>
+                <div>${order.date} | ${order.total}₽</div>
             `;
-            container.appendChild(orderDiv);
+            container.appendChild(div);
         });
-    } catch (error) {
-        container.innerHTML = '<div class="error">Ошибка загрузки заказов</div>';
+    } catch (e) {
+        container.innerHTML = '<div>Ошибка</div>';
     }
 }
 
 // ==================== ОТЗЫВЫ ====================
 
-function setRating(rating) {
-    currentRating = rating;
-    const stars = document.querySelectorAll('.rating-select span');
-    stars.forEach((star, index) => {
-        if (index < rating) {
-            star.style.background = '#ffd700';
-            star.style.color = 'black';
-        } else {
-            star.style.background = 'var(--tg-theme-secondary-bg-color, #f0f0f0)';
-            star.style.color = 'var(--tg-theme-text-color)';
-        }
+function setRating(r) {
+    currentRating = r;
+    document.querySelectorAll('.stars span').forEach((star, i) => {
+        star.style.color = i < r ? '#ffd700' : '#ddd';
     });
 }
 
 async function submitReview() {
-    if (!userId) return;
-    if (!currentRating) {
-        alert('Выберите оценку');
-        return;
-    }
-    
+    if (!currentRating) return alert('Выберите оценку');
     const text = document.getElementById('reviewText').value;
     
     try {
-        const response = await fetch(
+        await fetch(
             `${API_URL}/api/review/add?user_id=${userId}&rating=${currentRating}&text=${encodeURIComponent(text)}`,
             { method: 'POST' }
         );
-        const result = await response.json();
-        
-        if (result.success) {
-            alert('✅ Спасибо за отзыв!');
-            showReviews();
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при отправке отзыва');
+        alert('✅ Спасибо за отзыв!');
+        showReviews();
+    } catch (e) {
+        alert('Ошибка');
     }
 }
 
 async function loadReviews() {
-    const statsContainer = document.getElementById('reviewsStats');
-    const listContainer = document.getElementById('reviewsList');
+    const container = document.getElementById('reviewsList');
+    container.innerHTML = '<div class="loading">Загрузка...</div>';
     
     try {
-        const response = await fetch(`${API_URL}/api/reviews`);
-        const data = await response.json();
+        const res = await fetch(`${API_URL}/api/reviews`);
+        const data = await res.json();
         
-        statsContainer.innerHTML = `
-            <div>⭐ Всего отзывов: ${data.stats.total}</div>
-            <div>📊 Средний рейтинг: ${data.stats.avg_rating}/5</div>
-        `;
-        
-        listContainer.innerHTML = '';
-        data.reviews.forEach(review => {
-            const reviewDiv = document.createElement('div');
-            reviewDiv.className = 'review-card';
-            reviewDiv.innerHTML = `
-                <div class="review-header">
-                    <span class="review-rating">${'⭐'.repeat(review.rating)}</span>
-                    <span class="review-date">${review.date}</span>
-                </div>
-                <div class="review-author">${review.username}</div>
-                <div class="review-text">${review.text || 'Без текста'}</div>
+        container.innerHTML = '';
+        data.reviews.forEach(r => {
+            const div = document.createElement('div');
+            div.className = 'review-card';
+            div.innerHTML = `
+                <div><b>${'⭐'.repeat(r.rating)}</b> ${r.username}</div>
+                <div>${r.text || 'Без текста'}</div>
+                <div style="font-size:12px;color:#666">${r.date}</div>
             `;
-            listContainer.appendChild(reviewDiv);
+            container.appendChild(div);
         });
-    } catch (error) {
-        console.error('Ошибка:', error);
-        statsContainer.innerHTML = '<div class="error">Ошибка загрузки</div>';
+    } catch (e) {
+        container.innerHTML = '<div>Ошибка</div>';
     }
 }
 
-// ==================== АДМИН ПАНЕЛЬ ====================
+// ==================== АДМИН ====================
 
-async function checkAdminStatus() {
-    if (!userId) return;
-    
+async function checkAdmin() {
     try {
-        const response = await fetch(`${API_URL}/api/admin/check?user_id=${userId}`);
-        const data = await response.json();
-        
+        const res = await fetch(`${API_URL}/api/admin/check?user_id=${userId}`);
+        const data = await res.json();
         if (data.is_admin) {
             document.getElementById('adminBtn').style.display = 'block';
-            document.getElementById('adminMenuItem').style.display = 'block';
         }
-    } catch (error) {
-        console.error('Ошибка:', error);
-    }
+    } catch (e) {}
 }
 
 async function loadAdminData() {
-    if (!userId) return;
+    const ordersDiv = document.getElementById('adminOrders');
+    const reviewsDiv = document.getElementById('adminReviews');
+    const statsDiv = document.getElementById('adminStats');
     
     try {
-        // Загружаем новые заказы
-        const ordersResponse = await fetch(`${API_URL}/api/admin/pending-orders`);
-        const orders = await ordersResponse.json();
+        const [orders, reviews, stats] = await Promise.all([
+            fetch(`${API_URL}/api/admin/pending-orders`).then(r => r.json()),
+            fetch(`${API_URL}/api/admin/pending-reviews`).then(r => r.json()),
+            fetch(`${API_URL}/api/admin/stats`).then(r => r.json())
+        ]);
         
-        const ordersContainer = document.getElementById('adminOrdersList');
-        if (orders.length === 0) {
-            ordersContainer.innerHTML = '<div class="loading">Нет новых заказов</div>';
-        } else {
-            ordersContainer.innerHTML = '';
-            orders.forEach(order => {
-                const orderDiv = document.createElement('div');
-                orderDiv.className = 'admin-order-item';
-                orderDiv.innerHTML = `
-                    <div class="admin-order-header">
-                        <span>Заказ №${order.id}</span>
-                        <span>${order.customer_name}</span>
+        ordersDiv.innerHTML = '<h3>📦 Новые заказы</h3>' + 
+            orders.map(o => `
+                <div class="admin-section">
+                    <div>Заказ №${o.id} - ${o.customer_name}</div>
+                    <div>${o.total}₽ | ${o.phone}</div>
+                    <div class="admin-actions">
+                        <button class="accept" onclick="acceptOrder(${o.id})">✅ Принять</button>
+                        <button class="reject" onclick="rejectOrder(${o.id})">❌ Отклонить</button>
                     </div>
-                    <div>💰 ${order.total}₽ | 📞 ${order.phone}</div>
-                    <div class="admin-order-actions">
-                        <button class="accept-order" onclick="acceptOrder(${order.id})">✅ Принять</button>
-                        <button class="cancel-order" onclick="cancelOrder(${order.id})">❌ Отменить</button>
+                </div>
+            `).join('');
+        
+        reviewsDiv.innerHTML = '<h3>⭐ Отзывы</h3>' +
+            reviews.map(r => `
+                <div class="admin-section">
+                    <div>${'⭐'.repeat(r.rating)} от ${r.username}</div>
+                    <div>${r.text || 'Нет текста'}</div>
+                    <div class="admin-actions">
+                        <button class="accept" onclick="approveReview(${r.id})">✅ OK</button>
+                        <button class="reject" onclick="deleteReview(${r.id})">❌ Удалить</button>
                     </div>
-                `;
-                ordersContainer.appendChild(orderDiv);
-            });
-        }
+                </div>
+            `).join('');
         
-        // Загружаем отзывы на модерацию
-        const reviewsResponse = await fetch(`${API_URL}/api/admin/pending-reviews`);
-        const reviews = await reviewsResponse.json();
-        
-        const reviewsContainer = document.getElementById('adminReviewsList');
-        if (reviews.length === 0) {
-            reviewsContainer.innerHTML = '<div class="loading">Нет отзывов на модерации</div>';
-        } else {
-            reviewsContainer.innerHTML = '';
-            reviews.forEach(review => {
-                const reviewDiv = document.createElement('div');
-                reviewDiv.className = 'admin-order-item';
-                reviewDiv.innerHTML = `
-                    <div>⭐ ${review.rating}/5 от ${review.username}</div>
-                    <div>${review.text || 'Без текста'}</div>
-                    <div class="admin-order-actions">
-                        <button class="accept-order" onclick="approveReview(${review.id})">✅ Одобрить</button>
-                        <button class="cancel-order" onclick="deleteReview(${review.id})">❌ Удалить</button>
-                    </div>
-                `;
-                reviewsContainer.appendChild(reviewDiv);
-            });
-        }
-        
-        // Загружаем статистику
-        const statsResponse = await fetch(`${API_URL}/api/admin/stats`);
-        const stats = await statsResponse.json();
-        
-        document.getElementById('adminStats').innerHTML = `
-            <div><span>📦 Заказов:</span> <span>${stats.total_orders}</span></div>
-            <div><span>💰 Выручка:</span> <span>${stats.total_revenue}₽</span></div>
-            <div><span>🦐 Товаров:</span> <span>${stats.total_products}</span></div>
-            <div><span>📁 Категорий:</span> <span>${stats.total_categories}</span></div>
-            <div><span>⭐ Отзывов:</span> <span>${stats.total_reviews}</span></div>
-            <div><span>🆕 Новых заказов:</span> <span>${stats.new_orders}</span></div>
-            <div><span>✅ Принятых:</span> <span>${stats.accepted_orders}</span></div>
-            <div><span>🚚 Доставленных:</span> <span>${stats.delivered_orders}</span></div>
-            <div><span>❌ Отмененных:</span> <span>${stats.cancelled_orders}</span></div>
-        `;
-        
-    } catch (error) {
-        console.error('Ошибка:', error);
-    }
+        statsDiv.innerHTML = '<h3>📊 Статистика</h3>' +
+            `<div class="admin-section">
+                <div>📦 Заказов: ${stats.total_orders}</div>
+                <div>💰 Выручка: ${stats.total_revenue}₽</div>
+                <div>🦐 Товаров: ${stats.total_products}</div>
+            </div>`;
+    } catch (e) {}
 }
 
-async function acceptOrder(orderId) {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/order/${orderId}/accept`, {
-            method: 'POST'
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-            loadAdminData();
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-    }
+async function acceptOrder(id) {
+    await fetch(`${API_URL}/api/admin/order/${id}/accept`, { method: 'POST' });
+    loadAdminData();
 }
 
-async function cancelOrder(orderId) {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/order/${orderId}/cancel`, {
-            method: 'POST'
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-            loadAdminData();
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-    }
+async function rejectOrder(id) {
+    await fetch(`${API_URL}/api/admin/order/${id}/cancel`, { method: 'POST' });
+    loadAdminData();
 }
 
-async function approveReview(reviewId) {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/review/${reviewId}/approve`, {
-            method: 'POST'
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-            loadAdminData();
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-    }
+async function approveReview(id) {
+    await fetch(`${API_URL}/api/admin/review/${id}/approve`, { method: 'POST' });
+    loadAdminData();
 }
 
-async function deleteReview(reviewId) {
-    try {
-        const response = await fetch(`${API_URL}/api/admin/review/${reviewId}/delete`, {
-            method: 'POST'
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-            loadAdminData();
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-    }
+async function deleteReview(id) {
+    await fetch(`${API_URL}/api/admin/review/${id}/delete`, { method: 'POST' });
+    loadAdminData();
 }
 
-function exportOrders() {
-    window.open(`${API_URL}/api/admin/export-orders`, '_blank');
-}
-
-async function sendMailing() {
-    const text = document.getElementById('mailingText').value;
-    if (!text) {
-        alert('Введите текст рассылки');
-        return;
-    }
-    
-    try {
-        const response = await fetch(
-            `${API_URL}/api/admin/mailing?text=${encodeURIComponent(text)}`,
-            { method: 'POST' }
-        );
-        const result = await response.json();
-        
-        alert(`✅ Рассылка отправлена ${result.sent} пользователям`);
-        showAdminPanel();
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при отправке рассылки');
-    }
-}
-
-// ==================== ПСЕВДОНИМЫ ====================
-function viewCart() {
-    showCart();
-}
+// Старт
+showMainMenu();

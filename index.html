@@ -8,191 +8,125 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-        <!-- ШАПКА (видна всегда) -->
+    <div class="app">
+        <!-- Шапка -->
         <div class="header">
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             <h1>🦐 МАГАЗИН МОРЕПРОДУКТОВ</h1>
-            <div class="cart-icon" onclick="viewCart()">
+            <div class="cart-icon" onclick="goToCart()">
                 🛒 <span id="cartCount">0</span>
             </div>
         </div>
 
-        <!-- БОКОВОЕ МЕНЮ (слева) -->
-        <div id="sideMenu" class="side-menu">
-            <div class="menu-header">
-                <h3>Меню</h3>
-                <button class="close-menu" onclick="toggleMenu()">✕</button>
+        <!-- Главное меню (кнопки) -->
+        <div id="mainMenu">
+            <button class="big-btn" onclick="showCategories()">🛍 КАТАЛОГ</button>
+            <div class="row">
+                <button class="half-btn" onclick="goToCart()">🛒 КОРЗИНА</button>
+                <button class="half-btn" onclick="showOrders()">📦 ЗАКАЗЫ</button>
             </div>
-            <div class="menu-items">
-                <div class="menu-item" onclick="showMainMenu()">🏠 Главная</div>
-                <div class="menu-item" onclick="showCategories()">🛍 Каталог</div>
-                <div class="menu-item" onclick="viewCart()">🛒 Корзина</div>
-                <div class="menu-item" onclick="showOrders()">📦 Мои заказы</div>
-                <div class="menu-item" onclick="showReviews()">⭐ Отзывы</div>
-                <div class="menu-item" onclick="showAbout()">🏢 О нас</div>
-                <div class="menu-item" onclick="showHelp()">ℹ Помощь</div>
-                <div class="menu-item" id="adminMenuItem" style="display: none;" onclick="showAdminPanel()">👑 Админ панель</div>
+            <div class="row">
+                <button class="half-btn" onclick="showReviews()">⭐ ОТЗЫВЫ</button>
+                <button class="half-btn" onclick="showHelp()">ℹ ПОМОЩЬ</button>
             </div>
+            <button class="big-btn" onclick="showAbout()">🏢 О НАС</button>
+            <button id="adminBtn" class="admin-btn" style="display: none;" onclick="showAdmin()">👑 АДМИН</button>
         </div>
 
-        <!-- ОВЕРЛЕЙ (затемнение при открытом меню) -->
-        <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
-
-        <!-- ГЛАВНОЕ МЕНЮ (как в боте) -->
-        <div id="mainMenu" class="main-menu">
-            <button class="menu-btn" onclick="showCategories()">🛍 КАТАЛОГ</button>
-            <div class="menu-row">
-                <button class="menu-btn" onclick="viewCart()">🛒 КОРЗИНА</button>
-                <button class="menu-btn" onclick="showOrders()">📦 МОИ ЗАКАЗЫ</button>
-            </div>
-            <div class="menu-row">
-                <button class="menu-btn" onclick="showReviews()">⭐ ОТЗЫВЫ</button>
-                <button class="menu-btn" onclick="showHelp()">ℹ ПОМОЩЬ</button>
-            </div>
-            <button class="menu-btn" onclick="showAbout()">🏢 О НАС</button>
-            
-            <!-- Админ-панель (видна только админам) -->
-            <button id="adminBtn" class="menu-btn admin-btn" style="display: none;" onclick="showAdminPanel()">👑 АДМИН ПАНЕЛЬ</button>
-        </div>
-
-        <!-- КАТАЛОГ - КАТЕГОРИИ -->
-        <div id="categories" class="section" style="display: none;">
+        <!-- КАТАЛОГ (категории) -->
+        <div id="categoriesPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>Категории</h2>
-            <div id="categoriesList" class="categories-grid"></div>
+            <div id="categoriesList"></div>
         </div>
-        
-        <!-- КАТАЛОГ - ТОВАРЫ -->
-        <div id="products" class="section" style="display: none;">
+
+        <!-- ТОВАРЫ -->
+        <div id="productsPage" style="display: none;">
             <button class="back-btn" onclick="showCategories()">← Назад</button>
             <h2 id="categoryTitle"></h2>
-            <div id="productsList" class="products-grid"></div>
+            <div id="productsList"></div>
         </div>
-        
+
         <!-- КОРЗИНА -->
-        <div id="cart" class="section" style="display: none;">
+        <div id="cartPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>🛒 КОРЗИНА</h2>
-            <div class="delivery-info">✅ Доставка 7 и 8 Февраля</div>
-            <div id="cartItems" class="cart-items"></div>
-            <div id="cartTotal" class="cart-total"></div>
-            <button id="checkoutBtn" class="checkout-btn" onclick="showCheckout()">📦 ОФОРМИТЬ ЗАКАЗ</button>
-            <button class="clear-cart-btn" onclick="clearCart()">🗑 ОЧИСТИТЬ</button>
+            <div class="delivery">✅ Доставка 7-8 Февраля</div>
+            <div id="cartList"></div>
+            <div id="cartTotal" class="total"></div>
+            <button class="green-btn" onclick="goToCheckout()">📦 ОФОРМИТЬ</button>
+            <button class="red-btn" onclick="clearCart()">🗑 ОЧИСТИТЬ</button>
         </div>
-        
-        <!-- ОФОРМЛЕНИЕ ЗАКАЗА -->
-        <div id="checkout" class="section" style="display: none;">
-            <button class="back-btn" onclick="hideCheckout()">← Назад</button>
-            <h2>📦 ОФОРМЛЕНИЕ ЗАКАЗА</h2>
-            <div class="delivery-info">✅ Доставка 7 и 8 Февраля</div>
-            <form id="checkoutForm">
-                <input type="text" id="customerName" placeholder="Ваше имя" required>
-                <input type="tel" id="customerPhone" placeholder="Телефон" required>
-                <button type="submit" class="submit-btn">✅ ПОДТВЕРДИТЬ ЗАКАЗ</button>
-            </form>
+
+        <!-- ОФОРМЛЕНИЕ -->
+        <div id="checkoutPage" style="display: none;">
+            <button class="back-btn" onclick="goToCart()">← Назад</button>
+            <h2>📦 ОФОРМЛЕНИЕ</h2>
+            <input type="text" id="customerName" placeholder="Ваше имя">
+            <input type="tel" id="customerPhone" placeholder="Телефон">
+            <button class="green-btn" onclick="createOrder()">✅ ПОДТВЕРДИТЬ</button>
         </div>
 
         <!-- МОИ ЗАКАЗЫ -->
-        <div id="orders" class="section" style="display: none;">
+        <div id="ordersPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>📦 МОИ ЗАКАЗЫ</h2>
-            <div id="ordersList" class="orders-list"></div>
+            <div id="ordersList"></div>
         </div>
 
         <!-- ОТЗЫВЫ -->
-        <div id="reviews" class="section" style="display: none;">
+        <div id="reviewsPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>⭐ ОТЗЫВЫ</h2>
-            <div id="reviewsStats" class="reviews-stats"></div>
-            <div id="reviewsList" class="reviews-list"></div>
-            <button class="add-review-btn" onclick="showAddReview()">✍ НАПИСАТЬ ОТЗЫВ</button>
+            <div id="reviewsList"></div>
+            <button class="green-btn" onclick="showAddReview()">✍ НАПИСАТЬ</button>
         </div>
 
-        <!-- ДОБАВЛЕНИЕ ОТЗЫВА -->
-        <div id="addReview" class="section" style="display: none;">
+        <!-- ДОБАВИТЬ ОТЗЫВ -->
+        <div id="addReviewPage" style="display: none;">
             <button class="back-btn" onclick="showReviews()">← Назад</button>
             <h2>✍ НАПИСАТЬ ОТЗЫВ</h2>
-            <div class="rating-select">
-                <span onclick="setRating(1)">1 ⭐</span>
-                <span onclick="setRating(2)">2 ⭐</span>
-                <span onclick="setRating(3)">3 ⭐</span>
-                <span onclick="setRating(4)">4 ⭐</span>
-                <span onclick="setRating(5)">5 ⭐</span>
+            <div class="stars">
+                <span onclick="setRating(1)">⭐</span>
+                <span onclick="setRating(2)">⭐</span>
+                <span onclick="setRating(3)">⭐</span>
+                <span onclick="setRating(4)">⭐</span>
+                <span onclick="setRating(5)">⭐</span>
             </div>
-            <textarea id="reviewText" placeholder="Ваш отзыв" rows="4"></textarea>
-            <button class="submit-btn" onclick="submitReview()">📤 ОТПРАВИТЬ</button>
+            <textarea id="reviewText" placeholder="Ваш отзыв" rows="3"></textarea>
+            <button class="green-btn" onclick="submitReview()">📤 ОТПРАВИТЬ</button>
         </div>
 
         <!-- ПОМОЩЬ -->
-        <div id="help" class="section" style="display: none;">
+        <div id="helpPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>ℹ ПОМОЩЬ</h2>
-            <div class="help-content">
-                <p><b>Команды:</b></p>
+            <div class="info-box">
                 <p>/start - Главное меню</p>
                 <p>/admin - Админ-панель</p>
-                <p>/addme - Стать админом</p>
-                <p>🛍 КАТАЛОГ - просмотр товаров</p>
-                <p>🛒 КОРЗИНА - оформление заказа</p>
-                <p>📦 МОИ ЗАКАЗЫ - история</p>
-                <p>⭐ ОТЗЫВЫ - оставить отзыв</p>
                 <p>Поддержка: @admin</p>
             </div>
         </div>
 
         <!-- О НАС -->
-        <div id="about" class="section" style="display: none;">
+        <div id="aboutPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>🏢 О НАС</h2>
-            <div class="about-content">
-                <p><b>🦐 МАГАЗИН МОРЕПРОДУКТОВ</b></p>
-                <p>📍 Адрес: г. Волгоград, ул. Рабоче-Крестьянская, д. 14</p>
-                <p>📞 Контакты: +7 (999) 123-45-67</p>
-                <p>🚚 Доставка: 7 и 8 Февраля</p>
-                <p>- Курьером - от 300₽</p>
-                <p>- Самовывоз - бесплатно</p>
-                <p>💳 Оплата: наличные, перевод на карту</p>
-                <p>⭐ Работаем с 2015 года</p>
-                <p>Поддержка: @admin</p>
+            <div class="info-box">
+                <p>📍 Волгоград, Рабоче-Крестьянская 14</p>
+                <p>📞 +7 (999) 123-45-67</p>
+                <p>🚚 Доставка 7-8 Февраля</p>
             </div>
         </div>
 
         <!-- АДМИН ПАНЕЛЬ -->
-        <div id="adminPanel" class="section" style="display: none;">
+        <div id="adminPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>👑 АДМИН ПАНЕЛЬ</h2>
-            
-            <div class="admin-section">
-                <h3>📦 НОВЫЕ ЗАКАЗЫ</h3>
-                <div id="adminOrdersList"></div>
-            </div>
-
-            <div class="admin-section">
-                <h3>⭐ ОТЗЫВЫ НА МОДЕРАЦИИ</h3>
-                <div id="adminReviewsList"></div>
-            </div>
-
-            <div class="admin-section">
-                <h3>📊 СТАТИСТИКА</h3>
-                <div id="adminStats"></div>
-            </div>
-
-            <div class="admin-buttons">
-                <button class="admin-btn" onclick="exportOrders()">📥 ЭКСПОРТ ЗАКАЗОВ</button>
-                <button class="admin-btn" onclick="showMailing()">📨 РАССЫЛКА</button>
-            </div>
-        </div>
-
-        <!-- РАССЫЛКА (админ) -->
-        <div id="mailing" class="section" style="display: none;">
-            <button class="back-btn" onclick="showAdminPanel()">← Назад</button>
-            <h2>📨 РАССЫЛКА</h2>
-            <textarea id="mailingText" placeholder="Текст рассылки" rows="4"></textarea>
-            <button class="submit-btn" onclick="sendMailing()">📤 ОТПРАВИТЬ ВСЕМ</button>
+            <h2>👑 АДМИН</h2>
+            <div id="adminOrders"></div>
+            <div id="adminReviews"></div>
+            <div id="adminStats"></div>
         </div>
     </div>
-    
     <script src="app.js"></script>
 </body>
 </html>
