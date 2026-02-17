@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="app">
-        <!-- Шапка -->
+        <!-- ШАПКА -->
         <div class="header">
             <h1>🦐 МАГАЗИН МОРЕПРОДУКТОВ</h1>
             <div class="cart-icon" onclick="goToCart()">
@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <!-- Главное меню (кнопки) -->
+        <!-- ГЛАВНОЕ МЕНЮ -->
         <div id="mainMenu">
             <button class="big-btn" onclick="showCategories()">🛍 КАТАЛОГ</button>
             <div class="row">
@@ -29,56 +29,64 @@
                 <button class="half-btn" onclick="showHelp()">ℹ ПОМОЩЬ</button>
             </div>
             <button class="big-btn" onclick="showAbout()">🏢 О НАС</button>
-            <button id="adminBtn" class="admin-btn" style="display: none;" onclick="showAdmin()">👑 АДМИН</button>
+            <button id="adminBtn" class="admin-btn" style="display: none;" onclick="showAdmin()">👑 АДМИН ПАНЕЛЬ</button>
         </div>
 
-        <!-- КАТАЛОГ (категории) -->
+        <!-- КАТАЛОГ - КАТЕГОРИИ -->
         <div id="categoriesPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>Категории</h2>
-            <div id="categoriesList"></div>
+            <h2>📋 КАТЕГОРИИ</h2>
+            <div id="categoriesList" class="categories-grid"></div>
         </div>
 
-        <!-- ТОВАРЫ -->
+        <!-- КАТАЛОГ - ТОВАРЫ -->
         <div id="productsPage" style="display: none;">
             <button class="back-btn" onclick="showCategories()">← Назад</button>
             <h2 id="categoryTitle"></h2>
-            <div id="productsList"></div>
+            <div id="productsList" class="products-grid"></div>
+        </div>
+
+        <!-- ДЕТАЛИ ТОВАРА -->
+        <div id="productDetailPage" style="display: none;">
+            <button class="back-btn" onclick="showProducts(currentCategoryId, currentCategoryName)">← Назад</button>
+            <div id="productDetail" class="product-detail"></div>
         </div>
 
         <!-- КОРЗИНА -->
         <div id="cartPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>🛒 КОРЗИНА</h2>
-            <div class="delivery">✅ Доставка 7-8 Февраля</div>
-            <div id="cartList"></div>
+            <div class="delivery">✅ Доставка 7 и 8 Февраля</div>
+            <div id="cartList" class="cart-items"></div>
             <div id="cartTotal" class="total"></div>
-            <button class="green-btn" onclick="goToCheckout()">📦 ОФОРМИТЬ</button>
-            <button class="red-btn" onclick="clearCart()">🗑 ОЧИСТИТЬ</button>
+            <button class="green-btn" onclick="goToCheckout()">📦 ОФОРМИТЬ ЗАКАЗ</button>
+            <button class="red-btn" onclick="clearCart()">🗑 ОЧИСТИТЬ КОРЗИНУ</button>
         </div>
 
-        <!-- ОФОРМЛЕНИЕ -->
+        <!-- ОФОРМЛЕНИЕ ЗАКАЗА -->
         <div id="checkoutPage" style="display: none;">
             <button class="back-btn" onclick="goToCart()">← Назад</button>
-            <h2>📦 ОФОРМЛЕНИЕ</h2>
-            <input type="text" id="customerName" placeholder="Ваше имя">
-            <input type="tel" id="customerPhone" placeholder="Телефон">
-            <button class="green-btn" onclick="createOrder()">✅ ПОДТВЕРДИТЬ</button>
+            <h2>📦 ОФОРМЛЕНИЕ ЗАКАЗА</h2>
+            <div class="delivery">✅ Доставка 7 и 8 Февраля</div>
+            <input type="text" id="customerName" placeholder="Ваше имя" required>
+            <input type="tel" id="customerPhone" placeholder="Телефон" required>
+            <button class="green-btn" onclick="createOrder()">✅ ПОДТВЕРДИТЬ ЗАКАЗ</button>
         </div>
 
         <!-- МОИ ЗАКАЗЫ -->
         <div id="ordersPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>📦 МОИ ЗАКАЗЫ</h2>
-            <div id="ordersList"></div>
+            <div id="ordersList" class="orders-list"></div>
         </div>
 
         <!-- ОТЗЫВЫ -->
         <div id="reviewsPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>⭐ ОТЗЫВЫ</h2>
-            <div id="reviewsList"></div>
-            <button class="green-btn" onclick="showAddReview()">✍ НАПИСАТЬ</button>
+            <div id="reviewsStats" class="stats-box"></div>
+            <div id="reviewsList" class="reviews-list"></div>
+            <button class="green-btn" onclick="showAddReview()">✍ НАПИСАТЬ ОТЗЫВ</button>
         </div>
 
         <!-- ДОБАВИТЬ ОТЗЫВ -->
@@ -92,7 +100,7 @@
                 <span onclick="setRating(4)">⭐</span>
                 <span onclick="setRating(5)">⭐</span>
             </div>
-            <textarea id="reviewText" placeholder="Ваш отзыв" rows="3"></textarea>
+            <textarea id="reviewText" placeholder="Ваш отзыв" rows="4"></textarea>
             <button class="green-btn" onclick="submitReview()">📤 ОТПРАВИТЬ</button>
         </div>
 
@@ -101,9 +109,15 @@
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>ℹ ПОМОЩЬ</h2>
             <div class="info-box">
+                <p><b>Команды бота:</b></p>
                 <p>/start - Главное меню</p>
                 <p>/admin - Админ-панель</p>
-                <p>Поддержка: @admin</p>
+                <p>/addme - Стать админом</p>
+                <p>🛍 КАТАЛОГ - просмотр товаров</p>
+                <p>🛒 КОРЗИНА - оформление заказа</p>
+                <p>📦 МОИ ЗАКАЗЫ - история</p>
+                <p>⭐ ОТЗЫВЫ - оставить отзыв</p>
+                <p>📞 Поддержка: @admin</p>
             </div>
         </div>
 
@@ -112,19 +126,78 @@
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
             <h2>🏢 О НАС</h2>
             <div class="info-box">
-                <p>📍 Волгоград, Рабоче-Крестьянская 14</p>
-                <p>📞 +7 (999) 123-45-67</p>
-                <p>🚚 Доставка 7-8 Февраля</p>
+                <p><b>🦐 МАГАЗИН МОРЕПРОДУКТОВ</b></p>
+                <p>📍 Адрес: г. Волгоград, ул. Рабоче-Крестьянская, д. 14</p>
+                <p>📞 Контакты: +7 (999) 123-45-67</p>
+                <p>🚚 Доставка: 7 и 8 Февраля</p>
+                <p>- Курьером - от 300₽</p>
+                <p>- Самовывоз - бесплатно</p>
+                <p>💳 Оплата: наличные, перевод на карту</p>
+                <p>⭐ Работаем с 2015 года</p>
             </div>
         </div>
 
         <!-- АДМИН ПАНЕЛЬ -->
         <div id="adminPage" style="display: none;">
             <button class="back-btn" onclick="showMainMenu()">← Назад</button>
-            <h2>👑 АДМИН</h2>
-            <div id="adminOrders"></div>
-            <div id="adminReviews"></div>
-            <div id="adminStats"></div>
+            <h2>👑 АДМИН ПАНЕЛЬ</h2>
+            
+            <!-- СТАТИСТИКА -->
+            <div class="admin-section">
+                <h3>📊 СТАТИСТИКА МАГАЗИНА</h3>
+                <div id="adminStats" class="stats-grid"></div>
+            </div>
+
+            <!-- НОВЫЕ ЗАКАЗЫ -->
+            <div class="admin-section">
+                <h3>📦 НОВЫЕ ЗАКАЗЫ (требуют подтверждения)</h3>
+                <div id="adminOrders"></div>
+            </div>
+
+            <!-- ОТЗЫВЫ НА МОДЕРАЦИЮ -->
+            <div class="admin-section">
+                <h3>⭐ ОТЗЫВЫ НА МОДЕРАЦИЮ</h3>
+                <div id="adminReviews"></div>
+            </div>
+
+            <!-- УПРАВЛЕНИЕ ТОВАРАМИ -->
+            <div class="admin-section">
+                <h3>📦 УПРАВЛЕНИЕ ТОВАРАМИ</h3>
+                <div class="admin-buttons">
+                    <button class="admin-action-btn" onclick="exportProducts()">📤 ЭКСПОРТ ТОВАРОВ (Excel)</button>
+                    <button class="admin-action-btn" onclick="importProducts()">📥 ИМПОРТ ТОВАРОВ (Excel)</button>
+                </div>
+                <div class="admin-buttons">
+                    <button class="admin-action-btn" onclick="exportOrders()">📊 ЭКСПОРТ ЗАКАЗОВ (CSV)</button>
+                    <button class="admin-action-btn" onclick="showEditProducts()">✏ РЕДАКТИРОВАТЬ ТОВАРЫ</button>
+                </div>
+                <div id="importStatus" class="import-status"></div>
+                <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="uploadImportFile()">
+            </div>
+
+            <!-- СПИСОК ТОВАРОВ ДЛЯ РЕДАКТИРОВАНИЯ -->
+            <div id="editProductsSection" style="display: none;">
+                <h3>✏ ВЫБЕРИТЕ ТОВАР ДЛЯ РЕДАКТИРОВАНИЯ</h3>
+                <div id="productsEditList" class="products-edit-list"></div>
+                <button class="back-btn" onclick="hideEditProducts()">← Назад к админ-панели</button>
+            </div>
+
+            <!-- ФОРМА РЕДАКТИРОВАНИЯ ТОВАРА -->
+            <div id="editProductForm" style="display: none;">
+                <h3 id="editProductTitle">✏ РЕДАКТИРОВАНИЕ ТОВАРА</h3>
+                <input type="text" id="editName" placeholder="Название товара">
+                <textarea id="editDescription" placeholder="Краткое описание" rows="2"></textarea>
+                <textarea id="editFullDescription" placeholder="Полное описание" rows="3"></textarea>
+                <input type="number" id="editPrice" placeholder="Цена">
+                <input type="text" id="editUnit" placeholder="Единица измерения (кг, шт, уп)">
+                <input type="text" id="editWeight" placeholder="Информация о весе">
+                <input type="text" id="editOrigin" placeholder="Происхождение">
+                <input type="text" id="editTag" placeholder="Особая метка">
+                <div class="admin-buttons">
+                    <button class="green-btn" onclick="saveProduct()">💾 СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
+                    <button class="red-btn" onclick="cancelEdit()">✕ ОТМЕНА</button>
+                </div>
+            </div>
         </div>
     </div>
     <script src="app.js"></script>
