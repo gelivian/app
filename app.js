@@ -916,7 +916,7 @@ async function exportOrders() {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
         
-        sendNotification('📊 Экспорт завершен', 'Файл с заказами скачан');
+        sendNotification('📊 Экспорт завершен', 'Файл с заказами загружен');
     } catch (error) {
         alert('Ошибка экспорта');
     }
